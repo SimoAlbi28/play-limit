@@ -1,28 +1,15 @@
-import { Minus, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 
 type Props = {
-  onSpesa: () => void
-  onVincita: () => void
+  onAdd: () => void
 }
 
-export function ActionButtons({ onSpesa, onVincita }: Props) {
+export function ActionButtons({ onAdd }: Props) {
   return (
-    <div className="actions">
-      <button
-        type="button"
-        className="action action--spesa"
-        onClick={onSpesa}
-      >
-        <Minus className="action__symbol" size={28} strokeWidth={2.5} />
-        <span className="action__label">Spesa</span>
-      </button>
-      <button
-        type="button"
-        className="action action--vincita"
-        onClick={onVincita}
-      >
-        <Plus className="action__symbol" size={28} strokeWidth={2.5} />
-        <span className="action__label">Vincita</span>
+    <div className="actions actions--single">
+      <button type="button" className="action action--add" onClick={onAdd}>
+        <Plus size={28} strokeWidth={2.6} />
+        <span className="action__label">Aggiungi</span>
       </button>
     </div>
   )

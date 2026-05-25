@@ -2,6 +2,8 @@ import { useState } from 'react'
 import {
   ArrowLeft,
   CheckCircle2,
+  ChevronRight,
+  History as HistoryIcon,
   Monitor,
   Moon,
   Sun,
@@ -15,7 +17,9 @@ type Props = {
   onThemeChange: (t: Theme) => void
   onBack: () => void
   onResetAll: () => void
+  onOpenBetHistory: () => void
   transactionCount: number
+  betHistoryCount: number
 }
 
 const THEMES: { value: Theme; label: string; Icon: typeof Sun }[] = [
@@ -29,7 +33,9 @@ export function SettingsPage({
   onThemeChange,
   onBack,
   onResetAll,
+  onOpenBetHistory,
   transactionCount,
+  betHistoryCount,
 }: Props) {
   const [confirmStep, setConfirmStep] = useState<0 | 1 | 2>(0)
   const [confirmText, setConfirmText] = useState('')
@@ -80,6 +86,34 @@ export function SettingsPage({
             </button>
           ))}
         </div>
+      </section>
+
+      <section className="settings__section">
+        <h2 className="settings__heading">Scommesse</h2>
+        <button
+          type="button"
+          className="settings__row"
+          onClick={onOpenBetHistory}
+        >
+          <span className="settings__row-icon">
+            <HistoryIcon size={18} strokeWidth={2.2} />
+          </span>
+          <span className="settings__row-label">
+            Vedi cronologia
+            <span className="settings__row-meta">
+              {betHistoryCount === 0
+                ? 'Nessuna scommessa giocata'
+                : `${betHistoryCount} scommess${
+                    betHistoryCount === 1 ? 'a' : 'e'
+                  } giocat${betHistoryCount === 1 ? 'a' : 'e'}`}
+            </span>
+          </span>
+          <ChevronRight
+            className="settings__row-chevron"
+            size={18}
+            strokeWidth={2.2}
+          />
+        </button>
       </section>
 
       <section className="settings__section">

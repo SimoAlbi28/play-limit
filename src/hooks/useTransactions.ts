@@ -29,16 +29,45 @@ export function useTransactions() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions))
   }, [transactions])
 
-  const add = useCallback((type: TransactionType, amount: number) => {
-    if (!Number.isFinite(amount) || amount <= 0) return
-    const t: Transaction = {
-      id: crypto.randomUUID(),
-      type,
-      amount: Math.round(amount * 100) / 100,
-      createdAt: Date.now(),
-    }
-    setTransactions((prev) => [t, ...prev])
-  }, [])
+  const add = useCallback(
+    (
+      type: TransactionType,
+      amount: number,
+      createdAt?: number,
+      id?: string,
+    ): string | null => {
+      if (!Number.isFinite(amount) || amount <= 0) return null
+      const txId = id ?? crypto.randomUUID()
+      const t: Transaction = {
+        id: txId,
+        type,
+        amount: Math.round(amount * 100) / 100,
+        createdAt: createdAt ?? Date.now(),
+      }
+      setTransactions((prev) => [t, ...prev])
+      return txId
+    },
+    [],
+  )
+
+  const update = useCallback(
+    (id: string, patch: { amount?: number; createdAt?: number }) => {
+      setTransactions((prev) =>
+        prev.map((t) => {
+          if (t.id !== id) return t
+          const next = { ...t }
+          if (patch.amount !== undefined && Number.isFinite(patch.amount)) {
+            next.amount = Math.round(patch.amount * 100) / 100
+          }
+          if (patch.createdAt !== undefined) {
+            next.createdAt = patch.createdAt
+          }
+          return next
+        }),
+      )
+    },
+    [],
+  )
 
   const remove = useCallback((id: string) => {
     setTransactions((prev) => prev.filter((t) => t.id !== id))
@@ -69,6 +98,7 @@ export function useTransactions() {
     totalVincita,
     count: transactions.length,
     add,
+    update,
     remove,
     clearAll,
   }

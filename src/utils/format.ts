@@ -22,5 +22,5 @@ const dateFormatter = new Intl.DateTimeFormat('it-IT', {
 })
 
 export function formatDate(ts: number): string {
-  return dateFormatter.format(new Date(ts))
+  return dateFormatter.format(new Date(ts)).replace(', ', ' - ')
 }

@@ -50,10 +50,10 @@ input {
   top: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: 44px 1fr 44px;
+  grid-template-columns: 52px 1fr 44px;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 52px;
   margin: 0 -16px;
   padding: max(env(safe-area-inset-top), 14px) 16px 14px;
   background: var(--bg);
@@ -98,8 +98,8 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   padding: 0;
   margin: 0;
   background: transparent;
@@ -254,6 +254,69 @@ input {
   color: var(--negative-strong);
 }
 
+.balance--button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.balance--button:hover {
+  border-color: var(--border-strong);
+}
+
+.balance--button:active {
+  transform: scale(0.995);
+}
+
+.balance__edit-icon {
+  margin-left: 4px;
+  color: var(--text-faint);
+  opacity: 0.7;
+}
+
+.balance--button:hover .balance__edit-icon {
+  opacity: 1;
+  color: var(--text-muted);
+}
+
+.balance__potential {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-elev-2);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.balance__potential > svg {
+  color: var(--warning);
+}
+
+.balance__potential strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.balance__potential-value--positive {
+  color: var(--positive-strong);
+}
+
+.balance__potential-value--negative {
+  color: var(--negative-strong);
+}
+
 /* Stats */
 
 .stats {
@@ -318,6 +381,10 @@ input {
   gap: 12px;
 }
 
+.actions--single {
+  grid-template-columns: 1fr;
+}
+
 .action {
   display: flex;
   flex-direction: column;
@@ -354,6 +421,127 @@ input {
 
 .action--vincita {
   background: linear-gradient(135deg, var(--positive), var(--positive-strong));
+}
+
+.action--add {
+  position: relative;
+  overflow: hidden;
+  flex-direction: row;
+  gap: 12px;
+  padding: 16px 16px;
+  background-color: #6c4fff;
+  background-image: linear-gradient(
+    90deg,
+    #4f7bff 0%,
+    #7b54ff 20%,
+    #c842ff 40%,
+    #ff48b1 60%,
+    #c842ff 80%,
+    #4f7bff 100%
+  );
+  background-size: 640px 100%;
+  background-repeat: repeat;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 8px 22px -6px rgba(124, 84, 255, 0.55),
+    0 4px 14px -4px rgba(255, 72, 177, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  animation: action-add-flow 8s linear infinite;
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-base);
+}
+
+:root[data-theme='dark'] .action--add {
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 10px 28px -8px rgba(124, 84, 255, 0.7),
+    0 4px 18px -4px rgba(255, 72, 177, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.action--add::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 100%
+  );
+  transform: skewX(-22deg);
+  animation: action-add-shine 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.action--add::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    120% 80% at 50% 120%,
+    rgba(255, 255, 255, 0.18) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.action--add:hover {
+  box-shadow:
+    0 12px 32px -6px rgba(124, 84, 255, 0.65),
+    0 6px 22px -4px rgba(255, 72, 177, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.action--add:active {
+  transform: translateY(1px) scale(0.985);
+  filter: brightness(0.97);
+}
+
+.action--add > * {
+  position: relative;
+  z-index: 1;
+}
+
+.action--add .action__label {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@keyframes action-add-flow {
+  from {
+    background-position: 0 50%;
+  }
+  to {
+    background-position: -640px 50%;
+  }
+}
+
+@keyframes action-add-shine {
+  0% {
+    left: -60%;
+  }
+  55% {
+    left: 130%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action--add,
+  .action--add::before {
+    animation: none;
+  }
 }
 
 /* History */
@@ -619,13 +807,30 @@ input {
   background: transparent;
   border-style: dashed;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.03em;
 }
 
-.amount-presets__chip--reset:hover {
-  color: var(--text);
-  border-color: var(--text-muted);
+.amount-presets--spesa .amount-presets__chip--reset {
+  color: var(--negative-strong);
+  border-color: var(--negative);
+}
+
+.amount-presets--spesa .amount-presets__chip--reset:hover {
+  background: var(--negative-soft);
+  color: var(--negative-strong);
+  border-color: var(--negative);
+}
+
+.amount-presets--vincita .amount-presets__chip--reset {
+  color: var(--positive-strong);
+  border-color: var(--positive);
+}
+
+.amount-presets--vincita .amount-presets__chip--reset:hover {
+  background: var(--positive-soft);
+  color: var(--positive-strong);
+  border-color: var(--positive);
 }
 
 /* History row */
@@ -757,16 +962,30 @@ input {
 .dialog {
   width: 100%;
   max-width: 480px;
+  max-height: calc(100vh - 24px);
+  overflow: hidden;
   background: var(--bg-elev);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 0;
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 0;
   animation: slide-up 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
   text-align: center;
+}
+
+.dialog__header {
+  flex-shrink: 0;
+  padding: 20px 20px 12px;
+}
+
+.bet-form {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 20px 16px;
 }
 
 @keyframes fade-in {
@@ -840,15 +1059,21 @@ input {
   color: var(--positive-strong);
 }
 
-.amount-editor {
-  display: grid;
-  grid-template-columns: 56px 1fr 56px;
-  align-items: center;
+.amount-input {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
+.amount-editor {
+  display: grid;
+  grid-template-columns: 52px 1fr 52px;
+  align-items: center;
+  gap: 8px;
+}
+
 .amount-editor__step {
-  height: 56px;
+  height: 48px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-strong);
   background: var(--bg-elev-2);
@@ -876,8 +1101,8 @@ input {
   background: var(--bg-elev-2);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  padding: 0 14px;
-  height: 56px;
+  padding: 0 12px;
+  height: 48px;
 }
 
 .amount-editor__currency {
@@ -920,6 +1145,15 @@ input {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+.dialog__actions--sticky {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 14px 20px max(env(safe-area-inset-bottom), 16px);
+  background: var(--bg-elev);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -10px 18px -12px rgba(0, 0, 0, 0.4);
 }
 
 /* Buttons */
@@ -972,6 +1206,11 @@ input {
 
 .btn--danger {
   background: var(--negative);
+  color: white;
+}
+
+.btn--cancel {
+  background: linear-gradient(135deg, var(--negative), var(--negative-strong));
   color: white;
 }
 
@@ -1122,4 +1361,620 @@ input {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+
+/* Pending bets (Potenziali vincite) */
+
+.pending-bets {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+.pending-bets::before {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--border-strong) 50%,
+    transparent 100%
+  );
+  opacity: 0.7;
+}
+
+.pending-bets__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 4px;
+}
+
+.pending-bets__title {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+}
+
+.pending-bets__total {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--positive-strong);
+  background: var(--positive-soft);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.pending-bets__empty {
+  margin: 0;
+  padding: 20px 16px;
+  text-align: center;
+  color: var(--text-faint);
+  background: var(--bg-elev);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+}
+
+.pending-bets__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Bet card */
+
+.bet-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+}
+
+.bet-card__main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bet-card__main:active {
+  background: var(--bg-elev-2);
+}
+
+.bet-card__row {
+  padding: 10px 14px;
+}
+
+.bet-card__row + .bet-card__row {
+  border-top: 1px solid var(--border);
+}
+
+.bet-card__row--head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bet-card__row--desc {
+  text-align: left;
+}
+
+.bet-card__row--win {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 14px;
+}
+
+.bet-card__date {
+  color: var(--warning);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.bet-card__stake {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--negative-strong);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.bet-card__desc {
+  display: block;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.bet-card__win {
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--positive-strong);
+  white-space: nowrap;
+}
+
+.bet-card__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.bet-card__btn {
+  height: 42px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-size: 0.92rem;
+  cursor: pointer;
+  color: white;
+  transition: transform var(--transition-fast), filter var(--transition-fast);
+}
+
+.bet-card__btn:active {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+.bet-card__btn--lost {
+  background: linear-gradient(135deg, var(--negative), var(--negative-strong));
+}
+
+.bet-card__btn--won {
+  background: linear-gradient(135deg, var(--positive), var(--positive-strong));
+}
+
+/* Bet history (Cronologia scommesse) */
+
+.bet-history {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+.bet-history::before {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--border-strong) 50%,
+    transparent 100%
+  );
+  opacity: 0.7;
+}
+
+.bet-history__header {
+  padding: 0 4px;
+}
+
+.bet-history__title {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.bet-history__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bet-history__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-align: left;
+}
+
+.bet-history__status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.bet-history__status--won {
+  background: var(--positive-soft);
+  color: var(--positive-strong);
+}
+
+.bet-history__status--lost {
+  background: var(--negative-soft);
+  color: var(--negative-strong);
+}
+
+.bet-history__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bet-history__desc {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bet-history__date {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.bet-history__amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.bet-history__stake {
+  color: var(--negative-strong);
+}
+
+.bet-history__win {
+  color: var(--positive-strong);
+}
+
+/* Bet dialog form */
+
+.pill--bet {
+  background: rgba(106, 161, 255, 0.18);
+  color: var(--accent);
+}
+
+.bet-form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.bet-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 0;
+}
+
+.bet-field + .bet-field {
+  border-top: 1px solid var(--border);
+}
+
+.bet-field:first-child {
+  padding-top: 0;
+}
+
+.bet-field:last-child {
+  padding-bottom: 0;
+}
+
+.bet-field__label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding-left: 2px;
+}
+
+.bet-field--spesa .bet-field__label {
+  color: var(--negative-strong);
+}
+
+.bet-field--vincita .bet-field__label {
+  color: var(--positive-strong);
+}
+
+.bet-field__counter {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.bet-field__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.bet-field__input {
+  width: 100%;
+  height: 48px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 0 14px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+.bet-field__input:focus {
+  border-color: var(--accent);
+}
+
+.bet-field__input::placeholder {
+  color: var(--text-faint);
+}
+
+.bet-field__input--date {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.bet-field__input--text {
+  height: auto;
+  min-height: 48px;
+  max-height: 220px;
+  padding: 12px 14px;
+  line-height: 1.4;
+  resize: none;
+  overflow: hidden;
+  font-weight: 500;
+}
+
+.bet-field__reset {
+  flex-shrink: 0;
+  width: 44px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elev-2);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast), background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.bet-field__reset:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.bet-field__reset:active:not(:disabled) {
+  transform: scale(0.94);
+  background: var(--border);
+}
+
+.bet-field__reset:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.btn--bet {
+  background: linear-gradient(135deg, var(--accent), #4f6ee0);
+  color: white;
+}
+
+/* Settings row (link) */
+
+.settings__row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 36px 1fr 20px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-fast), transform var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.settings__row:hover {
+  border-color: var(--border-strong);
+}
+
+.settings__row:active {
+  transform: scale(0.99);
+  background: var(--bg-elev);
+}
+
+.settings__row-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.settings__row-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.settings__row-label > :first-child,
+.settings__row-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.settings__row-meta {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.settings__row-chevron {
+  color: var(--text-faint);
+}
+
+/* Bet history empty state */
+
+.bet-history__empty {
+  margin: 24px 0;
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--bg-elev);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+}
+
+/* Sign toggle (BalanceDialog) */
+
+.sign-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sign-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elev-2);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background var(--transition-fast),
+    border-color var(--transition-fast), color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.sign-toggle__btn:active {
+  transform: scale(0.97);
+}
+
+.sign-toggle__btn--neg.is-active {
+  background: var(--negative);
+  border-color: var(--negative-strong);
+  color: white;
+}
+
+.sign-toggle__btn--pos.is-active {
+  background: var(--positive);
+  border-color: var(--positive-strong);
+  color: white;
+}
+
+/* Balance recap (BalanceDialog) */
+
+.balance-recap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 0.92rem;
+}
+
+.balance-recap__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.balance-recap__row span {
+  color: var(--text-muted);
+}
+
+.balance-recap__row strong {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.balance-recap__row--diff {
+  border-top: 1px dashed var(--border);
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+.balance-recap__value--pos {
+  color: var(--positive-strong) !important;
+}
+
+.balance-recap__value--neg {
+  color: var(--negative-strong) !important;
 }
