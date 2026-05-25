@@ -18,6 +18,7 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete }: Props) {
   const startX = useRef<number | null>(null)
   const startedOpen = useRef(false)
   const isSpesa = tx.type === 'spesa'
+  const isInitial = tx.kind === 'initial'
   const Icon = isSpesa ? ArrowDownRight : ArrowUpRight
 
   const settledOffset = isOpen ? -MAX_SWIPE : 0
@@ -86,9 +87,13 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete }: Props) {
         </span>
         <div className="history-row__meta">
           <span className={`history-row__type history-row__type--${tx.type}`}>
-            {isSpesa ? 'Spesa' : 'Vincita'}
+            {isInitial ? 'Saldo iniziale' : isSpesa ? 'Spesa' : 'Vincita'}
           </span>
-          <span className="history-row__date">{formatDate(tx.createdAt)}</span>
+          {!isInitial && (
+            <span className="history-row__date">
+              {formatDate(tx.createdAt)}
+            </span>
+          )}
         </div>
         <div
           className={`history-row__amount history-row__amount--${tx.type}`}

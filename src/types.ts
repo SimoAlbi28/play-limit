@@ -1,10 +1,14 @@
 export type TransactionType = 'spesa' | 'vincita'
 
+export type TransactionKind = 'initial'
+
 export type Transaction = {
   id: string
   type: TransactionType
   amount: number
   createdAt: number
+  kind?: TransactionKind
+  hidden?: boolean
 }
 
 export type BetStatus = 'pending' | 'won' | 'lost'

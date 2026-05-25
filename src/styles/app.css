@@ -56,8 +56,9 @@ input {
   min-height: 52px;
   margin: 0 -16px;
   padding: max(env(safe-area-inset-top), 14px) 16px 14px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  background: #1a1f2a;
+  border-bottom: 1px solid #2a3142;
+  color: #ffffff;
 }
 
 .topbar__title {
@@ -66,7 +67,7 @@ input {
   font-weight: 600;
   letter-spacing: 0.2px;
   text-align: center;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .topbar__icon {
@@ -76,16 +77,16 @@ input {
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--border);
-  background: var(--bg-elev);
-  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
   cursor: pointer;
   transition: background var(--transition-fast), transform var(--transition-fast);
 }
 
 .topbar__icon:active {
   transform: scale(0.94);
-  background: var(--bg-elev-2);
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .topbar__icon--placeholder {
@@ -142,14 +143,12 @@ input {
   text-transform: uppercase;
   background: linear-gradient(
     90deg,
-    var(--positive) 0%,
-    var(--positive-strong) 14%,
-    #c8e07a 28%,
-    #f3b454 44%,
-    var(--negative) 58%,
-    var(--negative-strong) 72%,
-    #f3b454 86%,
-    var(--positive) 100%
+    #4f7bff 0%,
+    #7b54ff 20%,
+    #c842ff 40%,
+    #ff48b1 60%,
+    #c842ff 80%,
+    #4f7bff 100%
   );
   background-size: 300% 100%;
   -webkit-background-clip: text;
@@ -605,10 +604,28 @@ input {
 }
 
 .history__hint {
-  margin: 4px 0 0;
+  position: relative;
+  margin: 4px 0 12px;
+  padding-bottom: 14px;
   font-size: 0.78rem;
   color: var(--text-faint);
   text-align: center;
+}
+
+.history__hint::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--border-strong) 50%,
+    transparent 100%
+  );
+  opacity: 0.7;
 }
 
 /* Sort dropdown */
@@ -1210,6 +1227,21 @@ input {
 }
 
 .btn--cancel {
+  background: transparent;
+  color: var(--negative-strong);
+  border: 1px solid var(--negative);
+  font-weight: 700;
+}
+
+.btn--cancel:hover {
+  background: var(--negative-soft);
+}
+
+.btn--cancel:active {
+  background: var(--negative-soft);
+}
+
+.btn--delete {
   background: linear-gradient(135deg, var(--negative), var(--negative-strong));
   color: white;
 }
@@ -1372,18 +1404,31 @@ input {
   position: relative;
 }
 
-.pending-bets::before {
-  content: '';
-  display: block;
-  height: 1px;
-  width: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--border-strong) 50%,
-    transparent 100%
-  );
-  opacity: 0.7;
+.section-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  animation: section-arrow-bob 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes section-arrow-bob {
+  0%, 100% {
+    transform: translateY(-2px);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-arrow {
+    animation: none;
+    opacity: 0.7;
+  }
 }
 
 .pending-bets__header {
@@ -1470,7 +1515,7 @@ input {
 }
 
 .bet-card__row + .bet-card__row {
-  border-top: 1px solid var(--border);
+  border-top: 1px dashed var(--border-strong);
 }
 
 .bet-card__row--head {
@@ -1528,7 +1573,7 @@ input {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding: 12px 14px;
-  border-top: 1px solid var(--border);
+  border-top: 1px dashed var(--border-strong);
 }
 
 .bet-card__btn {
@@ -1614,12 +1659,25 @@ input {
 }
 
 .bet-history__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 4px 10px;
   border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.bet-history__status--initial {
+  background: rgba(178, 92, 0, 0.18);
+  color: var(--warning);
+}
+
+:root[data-theme='dark'] .bet-history__status--initial {
+  background: rgba(251, 191, 36, 0.18);
 }
 
 .bet-history__status--won {
@@ -1977,4 +2035,211 @@ input {
 
 .balance-recap__value--neg {
   color: var(--negative-strong) !important;
+}
+
+/* Bet history page — selection + delete toolbar */
+
+.bet-history-view {
+  padding-bottom: calc(max(env(safe-area-inset-bottom), 16px) + 72px);
+}
+
+.bet-history__row-wrap {
+  list-style: none;
+}
+
+.bet-history__row--selectable {
+  width: 100%;
+  cursor: pointer;
+  background: var(--bg-elev);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  font-family: inherit;
+  transition: background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.bet-history__row--selectable:hover {
+  border-color: var(--border-strong);
+}
+
+.bet-history__row.is-selected {
+  border-color: var(--negative);
+  background: var(--negative-soft);
+}
+
+.bet-history__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.bet-history__check.is-checked {
+  color: var(--negative-strong);
+}
+
+.bet-history-toolbar {
+  position: fixed;
+  bottom: max(env(safe-area-inset-bottom), 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+}
+
+.bet-history-toolbar--selection {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: none;
+  transform: none;
+  gap: 10px;
+  padding: 12px 16px max(env(safe-area-inset-bottom), 14px);
+  background: var(--bg-elev);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -10px 18px -10px rgba(0, 0, 0, 0.45);
+}
+
+.bet-history-toolbar--selection > .btn {
+  flex: 1;
+  height: 44px;
+  white-space: nowrap;
+  padding: 0 10px;
+  font-size: 0.92rem;
+}
+
+.bet-history-toolbar__trash {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--negative);
+  background: var(--negative-soft);
+  color: var(--negative-strong);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px -6px rgba(214, 58, 58, 0.55);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.bet-history-toolbar__trash:hover {
+  background: var(--negative);
+  color: white;
+}
+
+.bet-history-toolbar__trash:active {
+  transform: scale(0.94);
+}
+
+.pill--danger {
+  background: var(--negative-soft);
+  color: var(--negative-strong);
+}
+
+/* Selectable row grid override (icon + status + meta + amounts) */
+
+.bet-history__row--selectable {
+  display: grid;
+  grid-template-columns: 28px auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+/* App footer */
+
+.app-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  text-align: center;
+}
+
+.app-footer__text {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
+}
+
+.app-footer__text strong {
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.bet-history__desc--muted {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.pending-bets__header--centered {
+  justify-content: center;
+}
+
+.history__restore {
+  margin: 4px auto 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-elev-2);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    border-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.history__restore--active {
+  background: transparent;
+  border: 1px dashed var(--negative);
+  color: var(--negative-strong);
+}
+
+.history__restore--active:hover {
+  background: var(--negative-soft);
+  border-color: var(--negative-strong);
+  color: var(--negative-strong);
+}
+
+.history__restore:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.history__restore:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.overview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.overview__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.overview__title {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { RotateCcw } from 'lucide-react'
 import type { SortMode, Transaction } from '../types'
 import { HistoryRow } from './HistoryRow'
 import { SortFilter } from './SortFilter'
@@ -8,6 +9,8 @@ type Props = {
   sortMode: SortMode
   onSortChange: (m: SortMode) => void
   onDelete: (id: string) => void
+  hiddenCount: number
+  onRestoreHidden: () => void
 }
 
 function sortTransactions(list: Transaction[], mode: SortMode): Transaction[] {
@@ -39,9 +42,11 @@ export function History({
   sortMode,
   onSortChange,
   onDelete,
+  hiddenCount,
+  onRestoreHidden,
 }: Props) {
   const sorted = useMemo(
-    () => sortTransactions(transactions, sortMode),
+    () => sortTransactions(transactions.filter((t) => !t.hidden), sortMode),
     [transactions, sortMode],
   )
 
@@ -94,6 +99,17 @@ export function History({
           Scorri una riga verso sinistra per eliminarla.
         </p>
       )}
+      <button
+        type="button"
+        className={`history__restore ${
+          hiddenCount > 0 ? 'history__restore--active' : ''
+        }`}
+        onClick={onRestoreHidden}
+        disabled={hiddenCount === 0}
+      >
+        <RotateCcw size={16} strokeWidth={2.3} />
+        Ripristina eliminati ({hiddenCount})
+      </button>
     </section>
   )
 }

@@ -21,22 +21,19 @@ export function Balance({ balance, potentialBalance, onEdit }: Props) {
           ? 'negative'
           : 'zero'
       : 'zero'
-  return (
-    <button
-      type="button"
-      className={`balance balance--${sign} balance--button`}
-      onClick={onEdit}
-      aria-label="Imposta saldo"
-    >
+  const inner = (
+    <>
       <span className="balance__label">
         <Icon size={14} strokeWidth={2.5} />
         Saldo
-        <Pencil
-          className="balance__edit-icon"
-          size={12}
-          strokeWidth={2.4}
-          aria-hidden="true"
-        />
+        {onEdit && (
+          <Pencil
+            className="balance__edit-icon"
+            size={12}
+            strokeWidth={2.4}
+            aria-hidden="true"
+          />
+        )}
       </span>
       <span className="balance__amount">{formatEuro(balance, true)}</span>
       {showPotential && (
@@ -50,6 +47,21 @@ export function Balance({ balance, potentialBalance, onEdit }: Props) {
           </strong>
         </span>
       )}
+    </>
+  )
+
+  if (!onEdit) {
+    return <div className={`balance balance--${sign}`}>{inner}</div>
+  }
+
+  return (
+    <button
+      type="button"
+      className={`balance balance--${sign} balance--button`}
+      onClick={onEdit}
+      aria-label="Imposta saldo iniziale"
+    >
+      {inner}
     </button>
   )
 }

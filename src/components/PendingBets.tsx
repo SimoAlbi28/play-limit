@@ -1,3 +1,4 @@
+import { ChevronsDown } from 'lucide-react'
 import type { Bet } from '../types'
 import { formatDate, formatEuro } from '../utils/format'
 
@@ -14,11 +15,19 @@ export function PendingBets({
   onSettle,
   onEdit,
 }: Props) {
+  const isEmpty = bets.length === 0
   return (
     <section className="pending-bets">
-      <header className="pending-bets__header">
+      <div className="section-arrow" aria-hidden="true">
+        <ChevronsDown size={24} strokeWidth={2.2} />
+      </div>
+      <header
+        className={`pending-bets__header ${
+          isEmpty ? 'pending-bets__header--centered' : ''
+        }`}
+      >
         <h2 className="pending-bets__title">Potenziali vincite</h2>
-        {bets.length > 0 && (
+        {!isEmpty && (
           <span className="pending-bets__total">
             +{formatEuro(totalPotentialWin)}
           </span>
@@ -47,11 +56,11 @@ export function PendingBets({
                     Spesa {formatEuro(b.stake)}
                   </span>
                 </div>
-                <div className="bet-card__row bet-card__row--desc">
-                  <span className="bet-card__desc">
-                    {b.description || 'Senza descrizione'}
-                  </span>
-                </div>
+                {b.description.trim() && (
+                  <div className="bet-card__row bet-card__row--desc">
+                    <span className="bet-card__desc">{b.description}</span>
+                  </div>
+                )}
                 <div className="bet-card__row bet-card__row--win">
                   <span className="bet-card__win">
                     +{formatEuro(b.potentialWin)}

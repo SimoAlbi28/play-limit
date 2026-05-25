@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Settings as SettingsIcon } from 'lucide-react'
-import type { Bet } from './types'
+import type { Bet, Transaction } from './types'
+
+export type HistoryEntry =
+  | { kind: 'bet'; id: string; sortAt: number; bet: Bet }
+  | { kind: 'initial'; id: string; sortAt: number; tx: Transaction }
 import { useTransactions } from './hooks/useTransactions'
 import { useBets } from './hooks/useBets'
 import { useTheme } from './hooks/useTheme'
@@ -26,17 +30,19 @@ function App() {
     count,
     add: addTransaction,
     update: updateTransaction,
+    hide: hideTransaction,
+    unhideAll: unhideAllTransactions,
+    hiddenCount,
     remove: removeTransaction,
-    clearAll: clearTransactions,
   } = useTransactions()
   const {
     bets,
     pendingBets,
-    settledBets,
     totalPotentialWin,
     add: addBet,
     update: updateBet,
     settle: settleBet,
+    removeMany: removeBets,
   } = useBets()
   const { theme, setTheme } = useTheme()
   const { sortMode, setSortMode } = useSortMode()
@@ -94,19 +100,44 @@ function App() {
     settleBet(id, outcome)
   }
 
-  const handleResetAll = () => {
-    clearTransactions()
-  }
+  const historyEntries: HistoryEntry[] = useMemo(() => {
+    const list: HistoryEntry[] = []
+    for (const b of bets) {
+      list.push({
+        kind: 'bet',
+        id: b.id,
+        sortAt: b.resolvedAt ?? b.createdAt,
+        bet: b,
+      })
+    }
+    for (const t of transactions) {
+      if (t.kind === 'initial') {
+        list.push({ kind: 'initial', id: t.id, sortAt: t.createdAt, tx: t })
+      }
+    }
+    list.sort((a, b) => b.sortAt - a.sortAt)
+    return list
+  }, [bets, transactions])
 
-  const allBetsSorted = [...bets].sort(
-    (a, b) =>
-      (b.resolvedAt ?? b.createdAt) - (a.resolvedAt ?? a.createdAt),
-  )
+  const handleRemoveEntries = (ids: string[]) => {
+    const idSet = new Set(ids)
+    const betIds: string[] = []
+    const txIds: string[] = []
+    for (const entry of historyEntries) {
+      if (!idSet.has(entry.id)) continue
+      if (entry.kind === 'bet') betIds.push(entry.id)
+      else txIds.push(entry.id)
+    }
+    if (betIds.length) removeBets(betIds)
+    for (const id of txIds) removeTransaction(id)
+  }
 
   const handleSetBalance = (target: number) => {
     const diff = Math.round((target - balance) * 100) / 100
-    if (diff > 0) addTransaction('vincita', diff)
-    else if (diff < 0) addTransaction('spesa', -diff)
+    if (diff > 0)
+      addTransaction('vincita', diff, undefined, undefined, 'initial')
+    else if (diff < 0)
+      addTransaction('spesa', -diff, undefined, undefined, 'initial')
     setShowBalanceDialog(false)
   }
 
@@ -120,10 +151,8 @@ function App() {
           theme={theme}
           onThemeChange={setTheme}
           onBack={() => setView('home')}
-          onResetAll={handleResetAll}
           onOpenBetHistory={() => setView('bet-history')}
-          transactionCount={count}
-          betHistoryCount={allBetsSorted.length}
+          betHistoryCount={historyEntries.length}
         />
       </div>
     )
@@ -133,8 +162,9 @@ function App() {
     return (
       <div className="app">
         <BetHistoryPage
-          bets={allBetsSorted}
+          entries={historyEntries}
           onBack={() => setView('settings')}
+          onRemoveEntries={handleRemoveEntries}
         />
       </div>
     )
@@ -162,16 +192,25 @@ function App() {
         </button>
       </header>
 
-      <Balance
-        balance={balance}
-        potentialBalance={potentialBalance}
-        onEdit={() => setShowBalanceDialog(true)}
-      />
-      <Stats
-        totalSpesa={totalSpesa}
-        totalVincita={totalVincita}
-        count={count}
-      />
+      <section className="overview">
+        <header className="overview__header">
+          <h2 className="overview__title">Dati generali</h2>
+        </header>
+        <Balance
+          balance={balance}
+          potentialBalance={potentialBalance}
+          onEdit={
+            transactions.length === 0 && bets.length === 0
+              ? () => setShowBalanceDialog(true)
+              : undefined
+          }
+        />
+        <Stats
+          totalSpesa={totalSpesa}
+          totalVincita={totalVincita}
+          count={count}
+        />
+      </section>
       <ActionButtons onAdd={() => setShowBetDialog(true)} />
 
       <PendingBets
@@ -188,7 +227,9 @@ function App() {
         transactions={transactions}
         sortMode={sortMode}
         onSortChange={setSortMode}
-        onDelete={removeTransaction}
+        onDelete={hideTransaction}
+        hiddenCount={hiddenCount}
+        onRestoreHidden={unhideAllTransactions}
       />
 
       {showBalanceDialog && (

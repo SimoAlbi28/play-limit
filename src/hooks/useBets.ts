@@ -97,6 +97,11 @@ export function useBets() {
     setBets((prev) => prev.filter((b) => b.id !== id))
   }, [])
 
+  const removeMany = useCallback((ids: string[]) => {
+    const set = new Set(ids)
+    setBets((prev) => prev.filter((b) => !set.has(b.id)))
+  }, [])
+
   const clearAll = useCallback(() => setBets([]), [])
 
   const { pendingBets, settledBets, totalPotentialWin } = useMemo(() => {
@@ -131,6 +136,7 @@ export function useBets() {
     update,
     settle,
     remove,
+    removeMany,
     clearAll,
   }
 }
