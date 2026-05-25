@@ -1,6 +1,6 @@
 {
-  "name": "buylimt",
-  "short_name": "buylimt",
+  "name": "playlimt",
+  "short_name": "playlimt",
   "description": "Tieni traccia del saldo delle tue scommesse: spese, vincite e storico.",
   "start_url": "/",
   "scope": "/",
@@ -11,19 +11,19 @@
   "lang": "it",
   "icons": [
     {
-      "src": "/logo-192.png",
+      "src": "/logo-playlimit-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/logo-512.png",
+      "src": "/logo-playlimit-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/logo-512.png",
+      "src": "/logo-playlimit-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

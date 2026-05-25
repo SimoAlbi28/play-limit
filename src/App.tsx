@@ -30,6 +30,24 @@ function App() {
   const [view, setView] = useState<View>('home')
   const [dialogType, setDialogType] = useState<TransactionType | null>(null)
 
+  const scrollToTop = () => {
+    const start = window.scrollY || document.documentElement.scrollTop
+    if (start <= 0) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      window.scrollTo(0, 0)
+      return
+    }
+    const duration = Math.min(550, Math.max(280, start * 0.55))
+    const startTime = performance.now()
+    const step = (now: number) => {
+      const t = Math.min(1, (now - startTime) / duration)
+      const eased = 1 - Math.pow(1 - t, 3)
+      window.scrollTo(0, start * (1 - eased))
+      if (t < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }
+
   if (view === 'settings') {
     return (
       <div className="app">
@@ -47,10 +65,15 @@ function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <span className="topbar__logo" aria-label="buylimt">
-          <img src="/logo-192.png" alt="" width={36} height={36} />
-        </span>
-        <h1 className="topbar__title topbar__title--brand">buylimt</h1>
+        <button
+          type="button"
+          className="topbar__logo"
+          onClick={scrollToTop}
+          aria-label="Torna in cima"
+        >
+          <img src="/logo-playlimit-192.png" alt="" width={36} height={36} />
+        </button>
+        <h1 className="topbar__title topbar__title--brand">playlimt</h1>
         <button
           type="button"
           className="topbar__icon"

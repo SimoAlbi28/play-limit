@@ -38,8 +38,7 @@ input {
   width: 100%;
   max-width: 520px;
   margin: 0 auto;
-  padding: max(env(safe-area-inset-top), 14px) 16px
-    max(env(safe-area-inset-bottom), 20px);
+  padding: 0 16px max(env(safe-area-inset-bottom), 20px);
   gap: 20px;
   text-align: center;
 }
@@ -47,13 +46,17 @@ input {
 /* Topbar */
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: grid;
   grid-template-columns: 44px 1fr 44px;
   align-items: center;
   gap: 8px;
   min-height: 44px;
   margin: 0 -16px;
-  padding: 0 16px 14px;
+  padding: max(env(safe-area-inset-top), 14px) 16px 14px;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -97,6 +100,24 @@ input {
   justify-content: center;
   width: 44px;
   height: 44px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--transition-fast);
+}
+
+.topbar__logo:active {
+  transform: scale(0.92);
+}
+
+.topbar__logo:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .topbar__logo img {
@@ -342,6 +363,21 @@ input {
   flex-direction: column;
   gap: 12px;
   flex: 1;
+}
+
+.history::before {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--border-strong) 50%,
+    transparent 100%
+  );
+  opacity: 0.7;
+  margin-bottom: 4px;
 }
 
 .history__header {
