@@ -9,6 +9,7 @@ type Props = {
   sortMode: SortMode
   onSortChange: (m: SortMode) => void
   onDelete: (id: string) => void
+  onEdit: (tx: Transaction) => void
   hiddenCount: number
   onRestoreHidden: () => void
 }
@@ -42,6 +43,7 @@ export function History({
   sortMode,
   onSortChange,
   onDelete,
+  onEdit,
   hiddenCount,
   onRestoreHidden,
 }: Props) {
@@ -90,13 +92,17 @@ export function History({
               isOpen={openId === tx.id}
               onOpenChange={(open) => setOpenId(open ? tx.id : null)}
               onDelete={onDelete}
+              onEdit={onEdit}
             />
           ))}
         </ul>
       )}
       {sorted.length > 0 && (
         <p className="history__hint">
-          Scorri una riga verso sinistra per eliminarla.
+          <span>Scorri a sinistra per nascondere la riga.</span>
+          <span className="history__hint-sub">
+            Vai nella cronologia per eliminarla definitivamente.
+          </span>
         </p>
       )}
       <button

@@ -41,6 +41,10 @@
   --negative-strong: #921f1f;
 
   --warning: #b25c00;
+
+  --info: #3b82f6;
+  --info-soft: #bfdbfe;
+  --info-strong: #1d4ed8;
 }
 
 :root[data-theme='dark'] {
@@ -68,4 +72,8 @@
   --negative-strong: #ff7676;
 
   --warning: #fbbf24;
+
+  --info: #6aa1ff;
+  --info-soft: #93c5fd;
+  --info-strong: #bfdbfe;
 }

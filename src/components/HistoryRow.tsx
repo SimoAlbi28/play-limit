@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ArrowDownRight, ArrowUpRight, Trash2 } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, EyeOff } from 'lucide-react'
 import type { Transaction } from '../types'
 import { formatDate, formatEuro } from '../utils/format'
 
@@ -8,15 +8,20 @@ type Props = {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onDelete: (id: string) => void
+  onEdit: (tx: Transaction) => void
 }
 
 const SWIPE_THRESHOLD = 60
 const MAX_SWIPE = 110
+const HIDE_SWIPE = 170
+const MAX_OVERSCROLL = 200
+const TAP_TOLERANCE = 6
 
-export function HistoryRow({ tx, isOpen, onOpenChange, onDelete }: Props) {
+export function HistoryRow({ tx, isOpen, onOpenChange, onDelete, onEdit }: Props) {
   const [dragOffset, setDragOffset] = useState<number | null>(null)
   const startX = useRef<number | null>(null)
   const startedOpen = useRef(false)
+  const maxAbsDx = useRef(0)
   const isSpesa = tx.type === 'spesa'
   const isInitial = tx.kind === 'initial'
   const Icon = isSpesa ? ArrowDownRight : ArrowUpRight
@@ -28,6 +33,7 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete }: Props) {
   const handlePointerDown = (e: React.PointerEvent) => {
     startX.current = e.clientX
     startedOpen.current = isOpen
+    maxAbsDx.current = 0
     setDragOffset(settledOffset)
     ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
   }
@@ -35,22 +41,44 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete }: Props) {
   const handlePointerMove = (e: React.PointerEvent) => {
     if (startX.current === null) return
     const dx = e.clientX - startX.current
+    if (Math.abs(dx) > maxAbsDx.current) maxAbsDx.current = Math.abs(dx)
     const base = startedOpen.current ? -MAX_SWIPE : 0
-    const next = Math.min(0, Math.max(-MAX_SWIPE, base + dx))
+    const raw = base + dx
+    let next: number
+    if (raw >= 0) {
+      next = 0
+    } else if (raw >= -MAX_SWIPE) {
+      next = raw
+    } else {
+      const extra = -MAX_SWIPE - raw
+      const eased = MAX_OVERSCROLL * (1 - Math.exp(-extra / 80))
+      next = -MAX_SWIPE - eased
+    }
     setDragOffset(next)
   }
 
   const handlePointerUp = () => {
     if (startX.current === null) return
     const current = dragOffset ?? 0
+    const moved = maxAbsDx.current
     startX.current = null
     setDragOffset(null)
 
-    if (startedOpen.current) {
-      onOpenChange(current <= -SWIPE_THRESHOLD)
-    } else {
-      onOpenChange(current <= -SWIPE_THRESHOLD)
+    if (moved <= TAP_TOLERANCE) {
+      if (startedOpen.current) {
+        handleDelete()
+      } else {
+        onEdit(tx)
+      }
+      return
     }
+
+    if (current <= -HIDE_SWIPE) {
+      handleDelete()
+      return
+    }
+
+    onOpenChange(current <= -SWIPE_THRESHOLD)
   }
 
   const handleDelete = () => {
@@ -64,9 +92,9 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete }: Props) {
         type="button"
         className="history-row__delete"
         onClick={handleDelete}
-        aria-label="Elimina"
+        aria-label="Nascondi"
       >
-        <Trash2 size={20} strokeWidth={2} />
+        <EyeOff size={20} strokeWidth={2} />
       </button>
       <div
         className="history-row__content"

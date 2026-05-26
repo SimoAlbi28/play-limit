@@ -58,7 +58,12 @@ export function useTransactions() {
   const update = useCallback(
     (
       id: string,
-      patch: { amount?: number; createdAt?: number; description?: string },
+      patch: {
+        amount?: number
+        createdAt?: number
+        description?: string
+        type?: TransactionType
+      },
     ) => {
       setTransactions((prev) =>
         prev.map((t) => {
@@ -74,6 +79,9 @@ export function useTransactions() {
             const desc = patch.description.trim()
             if (desc) next.description = desc
             else delete next.description
+          }
+          if (patch.type !== undefined) {
+            next.type = patch.type
           }
           return next
         }),

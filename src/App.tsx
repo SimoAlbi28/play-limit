@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Settings as SettingsIcon } from 'lucide-react'
 import type { Bet, Transaction } from './types'
 
@@ -14,6 +14,7 @@ import { Stats } from './components/Stats'
 import { ActionButtons } from './components/ActionButtons'
 import { BetDialog } from './components/BetDialog'
 import { BalanceDialog } from './components/BalanceDialog'
+import { TransactionDialog } from './components/TransactionDialog'
 import { PendingBets } from './components/PendingBets'
 import { BetHistoryPage } from './components/BetHistoryPage'
 import { History } from './components/History'
@@ -51,6 +52,14 @@ function App() {
   const [showBetDialog, setShowBetDialog] = useState(false)
   const [showBalanceDialog, setShowBalanceDialog] = useState(false)
   const [editingBet, setEditingBet] = useState<Bet | null>(null)
+  const [editingTx, setEditingTx] = useState<Transaction | null>(null)
+  const [introDone, setIntroDone] = useState(false)
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setIntroDone(true)
+    }
+  }, [])
 
   const scrollToTop = () => {
     const start = window.scrollY || document.documentElement.scrollTop
@@ -164,6 +173,24 @@ function App() {
     for (const id of txIds) removeTransaction(id)
   }
 
+  const handleEditTransaction = (tx: Transaction) => {
+    setShowBetDialog(false)
+    setEditingBet(null)
+    setShowBalanceDialog(false)
+    setEditingTx(tx)
+  }
+
+  const handleConfirmTxEdit = (patch: {
+    amount: number
+    createdAt: number
+    description?: string
+    type?: 'spesa' | 'vincita'
+  }) => {
+    if (!editingTx) return
+    updateTransaction(editingTx.id, patch)
+    setEditingTx(null)
+  }
+
   const handleSetBalance = (target: number) => {
     const diff = Math.round((target - balance) * 100) / 100
     if (diff > 0)
@@ -204,6 +231,32 @@ function App() {
 
   return (
     <div className="app">
+      {!introDone && (
+        <div
+          className="intro-logo"
+          aria-hidden="true"
+          onAnimationEnd={(e) => {
+            if (e.animationName === 'intro-logo-fade') setIntroDone(true)
+          }}
+        >
+          <div className="intro-logo__wrap">
+            <img
+              className="intro-logo__faint"
+              src="/logo-playlimit-192.png"
+              alt=""
+              width={200}
+              height={200}
+            />
+            <img
+              className="intro-logo__full"
+              src="/logo-playlimit-192.png"
+              alt=""
+              width={200}
+              height={200}
+            />
+          </div>
+        </div>
+      )}
       <header className="topbar">
         <button
           type="button"
@@ -260,6 +313,7 @@ function App() {
         sortMode={sortMode}
         onSortChange={setSortMode}
         onDelete={hideTransaction}
+        onEdit={handleEditTransaction}
         hiddenCount={hiddenCount}
         onRestoreHidden={unhideAllTransactions}
       />
@@ -269,6 +323,14 @@ function App() {
           currentBalance={balance}
           onCancel={() => setShowBalanceDialog(false)}
           onConfirm={handleSetBalance}
+        />
+      )}
+
+      {editingTx && (
+        <TransactionDialog
+          tx={editingTx}
+          onCancel={() => setEditingTx(null)}
+          onConfirm={handleConfirmTxEdit}
         />
       )}
 
