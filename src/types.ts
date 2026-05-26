@@ -22,6 +22,7 @@ export type Bet = {
   status: BetStatus
   resolvedAt?: number
   spesaTxId?: string
+  vincitaTxId?: string
 }
 
 export type Theme = 'light' | 'dark' | 'auto'

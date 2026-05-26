@@ -1,6 +1,6 @@
 {
-  "name": "playlimt",
-  "short_name": "playlimt",
+  "name": "PlayLimit",
+  "short_name": "PlayLimit",
   "description": "Tieni traccia del saldo delle tue scommesse: spese, vincite e storico.",
   "start_url": "/",
   "scope": "/",

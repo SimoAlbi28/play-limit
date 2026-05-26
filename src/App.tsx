@@ -93,11 +93,14 @@ function App() {
   }
 
   const handleSettleBet = (id: string, outcome: 'won' | 'lost') => {
+    let vincitaTxId: string | undefined
     if (outcome === 'won') {
       const bet = pendingBets.find((b) => b.id === id)
-      if (bet) addTransaction('vincita', bet.potentialWin)
+      if (bet) {
+        vincitaTxId = addTransaction('vincita', bet.potentialWin) ?? undefined
+      }
     }
-    settleBet(id, outcome)
+    settleBet(id, outcome, vincitaTxId)
   }
 
   const historyEntries: HistoryEntry[] = useMemo(() => {
@@ -122,14 +125,21 @@ function App() {
   const handleRemoveEntries = (ids: string[]) => {
     const idSet = new Set(ids)
     const betIds: string[] = []
-    const txIds: string[] = []
+    const linkedTxIds: string[] = []
+    const initialTxIds: string[] = []
     for (const entry of historyEntries) {
       if (!idSet.has(entry.id)) continue
-      if (entry.kind === 'bet') betIds.push(entry.id)
-      else txIds.push(entry.id)
+      if (entry.kind === 'bet') {
+        betIds.push(entry.id)
+        if (entry.bet.spesaTxId) linkedTxIds.push(entry.bet.spesaTxId)
+        if (entry.bet.vincitaTxId) linkedTxIds.push(entry.bet.vincitaTxId)
+      } else {
+        initialTxIds.push(entry.id)
+      }
     }
     if (betIds.length) removeBets(betIds)
-    for (const id of txIds) removeTransaction(id)
+    for (const id of linkedTxIds) removeTransaction(id)
+    for (const id of initialTxIds) removeTransaction(id)
   }
 
   const handleSetBalance = (target: number) => {

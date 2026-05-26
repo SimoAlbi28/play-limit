@@ -966,20 +966,20 @@ input {
   justify-content: center;
   z-index: 50;
   animation: fade-in var(--transition-base);
-  padding: 0 12px 12px;
+  padding: calc(env(safe-area-inset-top) + 100px) 12px 12px;
 }
 
 @media (min-width: 540px) {
   .dialog-backdrop {
     align-items: center;
-    padding: 12px;
+    padding: calc(env(safe-area-inset-top) + 24px) 12px 12px;
   }
 }
 
 .dialog {
   width: 100%;
   max-width: 480px;
-  max-height: calc(100vh - 24px);
+  max-height: calc(100vh - env(safe-area-inset-top) - 112px);
   overflow: hidden;
   background: var(--bg-elev);
   border: 1px solid var(--border);

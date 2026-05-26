@@ -85,13 +85,23 @@ export function useBets() {
     )
   }, [])
 
-  const settle = useCallback((id: string, outcome: 'won' | 'lost') => {
-    setBets((prev) =>
-      prev.map((b) =>
-        b.id === id ? { ...b, status: outcome, resolvedAt: Date.now() } : b,
-      ),
-    )
-  }, [])
+  const settle = useCallback(
+    (id: string, outcome: 'won' | 'lost', vincitaTxId?: string) => {
+      setBets((prev) =>
+        prev.map((b) =>
+          b.id === id
+            ? {
+                ...b,
+                status: outcome,
+                resolvedAt: Date.now(),
+                ...(vincitaTxId ? { vincitaTxId } : {}),
+              }
+            : b,
+        ),
+      )
+    },
+    [],
+  )
 
   const remove = useCallback((id: string) => {
     setBets((prev) => prev.filter((b) => b.id !== id))
