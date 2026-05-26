@@ -97,6 +97,41 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: none;
+  touch-action: pan-x pan-y;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Inputs and textareas: keep text selection */
+input,
+textarea,
+[contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Lock app to portrait — visually rotate when the device is in landscape */
+@media (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  #root {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100vh;
+    height: 100vw;
+    transform-origin: left top;
+    transform: rotate(-90deg);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 button {
@@ -1368,6 +1403,8 @@ input {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  flex: 1;
+  min-height: 0;
 }
 
 .settings__section {
@@ -2327,14 +2364,25 @@ input {
 
 .history__restore--active {
   background: transparent;
-  border: 1px dashed var(--negative);
-  color: var(--negative-strong);
+  border: 1px dashed var(--info);
+  color: var(--info-strong);
 }
 
 .history__restore--active:hover {
-  background: var(--negative-soft);
-  border-color: var(--negative-strong);
-  color: var(--negative-strong);
+  background: var(--info-soft);
+  border-color: var(--info-strong);
+  color: var(--info-strong);
+}
+
+:root[data-theme='dark'] .history__restore--active {
+  color: #cfe0ff;
+  border-color: var(--info);
+}
+
+:root[data-theme='dark'] .history__restore--active:hover {
+  background: rgba(106, 161, 255, 0.22);
+  color: #ffffff;
+  border-color: var(--info-strong);
 }
 
 .history__restore:disabled {
