@@ -36,15 +36,18 @@ export function useTransactions() {
       createdAt?: number,
       id?: string,
       kind?: TransactionKind,
+      description?: string,
     ): string | null => {
       if (!Number.isFinite(amount) || amount <= 0) return null
       const txId = id ?? crypto.randomUUID()
+      const desc = description?.trim()
       const t: Transaction = {
         id: txId,
         type,
         amount: Math.round(amount * 100) / 100,
         createdAt: createdAt ?? Date.now(),
         ...(kind ? { kind } : {}),
+        ...(desc ? { description: desc } : {}),
       }
       setTransactions((prev) => [t, ...prev])
       return txId
@@ -53,7 +56,10 @@ export function useTransactions() {
   )
 
   const update = useCallback(
-    (id: string, patch: { amount?: number; createdAt?: number }) => {
+    (
+      id: string,
+      patch: { amount?: number; createdAt?: number; description?: string },
+    ) => {
       setTransactions((prev) =>
         prev.map((t) => {
           if (t.id !== id) return t
@@ -63,6 +69,11 @@ export function useTransactions() {
           }
           if (patch.createdAt !== undefined) {
             next.createdAt = patch.createdAt
+          }
+          if (patch.description !== undefined) {
+            const desc = patch.description.trim()
+            if (desc) next.description = desc
+            else delete next.description
           }
           return next
         }),

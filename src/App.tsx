@@ -4,7 +4,7 @@ import type { Bet, Transaction } from './types'
 
 export type HistoryEntry =
   | { kind: 'bet'; id: string; sortAt: number; bet: Bet }
-  | { kind: 'initial'; id: string; sortAt: number; tx: Transaction }
+  | { kind: 'tx'; id: string; sortAt: number; tx: Transaction }
 import { useTransactions } from './hooks/useTransactions'
 import { useBets } from './hooks/useBets'
 import { useTheme } from './hooks/useTheme'
@@ -87,8 +87,30 @@ function App() {
       setEditingBet(null)
       return
     }
-    const txId = addTransaction('spesa', data.stake, data.createdAt)
-    addBet({ ...data, spesaTxId: txId ?? undefined })
+    const hasStake = data.stake > 0
+    const hasWin = data.potentialWin > 0
+    if (hasStake && hasWin) {
+      const txId = addTransaction('spesa', data.stake, data.createdAt)
+      addBet({ ...data, spesaTxId: txId ?? undefined })
+    } else if (hasStake) {
+      addTransaction(
+        'spesa',
+        data.stake,
+        data.createdAt,
+        undefined,
+        'standalone',
+        data.description,
+      )
+    } else if (hasWin) {
+      addTransaction(
+        'vincita',
+        data.potentialWin,
+        data.createdAt,
+        undefined,
+        'standalone',
+        data.description,
+      )
+    }
     setShowBetDialog(false)
   }
 
@@ -105,6 +127,7 @@ function App() {
 
   const historyEntries: HistoryEntry[] = useMemo(() => {
     const list: HistoryEntry[] = []
+    const linkedTxIds = new Set<string>()
     for (const b of bets) {
       list.push({
         kind: 'bet',
@@ -112,11 +135,12 @@ function App() {
         sortAt: b.resolvedAt ?? b.createdAt,
         bet: b,
       })
+      if (b.spesaTxId) linkedTxIds.add(b.spesaTxId)
+      if (b.vincitaTxId) linkedTxIds.add(b.vincitaTxId)
     }
     for (const t of transactions) {
-      if (t.kind === 'initial') {
-        list.push({ kind: 'initial', id: t.id, sortAt: t.createdAt, tx: t })
-      }
+      if (linkedTxIds.has(t.id)) continue
+      list.push({ kind: 'tx', id: t.id, sortAt: t.createdAt, tx: t })
     }
     list.sort((a, b) => b.sortAt - a.sortAt)
     return list
@@ -125,21 +149,19 @@ function App() {
   const handleRemoveEntries = (ids: string[]) => {
     const idSet = new Set(ids)
     const betIds: string[] = []
-    const linkedTxIds: string[] = []
-    const initialTxIds: string[] = []
+    const txIds: string[] = []
     for (const entry of historyEntries) {
       if (!idSet.has(entry.id)) continue
       if (entry.kind === 'bet') {
         betIds.push(entry.id)
-        if (entry.bet.spesaTxId) linkedTxIds.push(entry.bet.spesaTxId)
-        if (entry.bet.vincitaTxId) linkedTxIds.push(entry.bet.vincitaTxId)
+        if (entry.bet.spesaTxId) txIds.push(entry.bet.spesaTxId)
+        if (entry.bet.vincitaTxId) txIds.push(entry.bet.vincitaTxId)
       } else {
-        initialTxIds.push(entry.id)
+        txIds.push(entry.id)
       }
     }
     if (betIds.length) removeBets(betIds)
-    for (const id of linkedTxIds) removeTransaction(id)
-    for (const id of initialTxIds) removeTransaction(id)
+    for (const id of txIds) removeTransaction(id)
   }
 
   const handleSetBalance = (target: number) => {

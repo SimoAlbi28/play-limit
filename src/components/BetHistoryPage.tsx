@@ -117,6 +117,7 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
     }
     const t = entry.tx
     const signed = t.type === 'vincita' ? t.amount : -t.amount
+    const isInitial = t.kind === 'initial'
     return (
       <>
         {selectionMode && (
@@ -131,11 +132,30 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
             )}
           </span>
         )}
-        <span className="bet-history__status bet-history__status--initial">
-          <Wallet size={14} strokeWidth={2.4} />
-          Saldo iniziale
-        </span>
-        <div className="bet-history__meta" aria-hidden="true" />
+        {isInitial ? (
+          <span className="bet-history__status bet-history__status--initial">
+            <Wallet size={14} strokeWidth={2.4} />
+            Saldo iniziale
+          </span>
+        ) : (
+          <span
+            className={`bet-history__status bet-history__status--${t.type}`}
+          >
+            {t.type === 'spesa' ? 'Spesa' : 'Vincita'}
+          </span>
+        )}
+        {isInitial ? (
+          <div className="bet-history__meta" aria-hidden="true" />
+        ) : (
+          <div className="bet-history__meta">
+            {t.description && t.description.trim() && (
+              <span className="bet-history__desc">{t.description}</span>
+            )}
+            <span className="bet-history__date">
+              {formatDate(t.createdAt)}
+            </span>
+          </div>
+        )}
         <div className="bet-history__amounts">
           <span
             className={
@@ -177,7 +197,10 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
                 ? entry.bet.status === 'pending'
                   ? 'lost'
                   : entry.bet.status
-                : 'initial'
+                : entry.tx.kind === 'initial'
+                  ? 'initial'
+                  : entry.tx.type
+
             const className = `bet-history__row bet-history__row--${statusClass} ${
               entry.kind === 'bet' && entry.bet.status === 'pending'
                 ? 'bet-history__row--pending'
@@ -253,13 +276,13 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
 
       {confirmOpen && (
         <div
-          className="dialog-backdrop"
+          className="dialog-backdrop dialog-backdrop--center"
           onClick={(e) => {
             if (e.target === e.currentTarget) cancelConfirm()
           }}
         >
           <div
-            className="dialog dialog--bet"
+            className="dialog dialog--bet dialog--confirm"
             role="dialog"
             aria-modal="true"
             aria-label="Conferma eliminazione"
@@ -293,7 +316,6 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
                 </p>
                 <input
                   className="confirm-block__input"
-                  autoFocus
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value)}
                   placeholder="ELIMINA"

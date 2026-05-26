@@ -68,7 +68,33 @@ export function BetDialog({ initial, onCancel, onConfirm }: Props) {
 
   const stake = parseAmount(stakeRaw)
   const win = parseAmount(winRaw)
-  const valid = stake > 0 && win > 0
+  const hasStake = stake > 0
+  const hasWin = win > 0
+  const valid = isEdit ? hasStake && hasWin : hasStake || hasWin
+  const mode: 'bet' | 'spesa' | 'vincita' | 'empty' = isEdit
+    ? 'bet'
+    : hasStake && hasWin
+      ? 'bet'
+      : hasStake
+        ? 'spesa'
+        : hasWin
+          ? 'vincita'
+          : 'empty'
+  const pillLabel = isEdit
+    ? 'Modifica scommessa'
+    : mode === 'bet'
+      ? 'Nuova schedina'
+      : mode === 'spesa'
+        ? 'Nuova spesa'
+        : mode === 'vincita'
+          ? 'Nuova vincita'
+          : 'Nuova voce'
+  const pillClass =
+    mode === 'spesa'
+      ? 'pill pill--spesa'
+      : mode === 'vincita'
+        ? 'pill pill--vincita'
+        : 'pill pill--bet'
 
   useEffect(() => {
     const el = descRef.current
@@ -108,8 +134,8 @@ export function BetDialog({ initial, onCancel, onConfirm }: Props) {
         : isoToTimestampNow(date, initial?.createdAt ?? Date.now())
     onConfirm({
       description: description.trim(),
-      stake,
-      potentialWin: win,
+      stake: hasStake ? stake : 0,
+      potentialWin: hasWin ? win : 0,
       createdAt,
     })
   }
@@ -136,12 +162,10 @@ export function BetDialog({ initial, onCancel, onConfirm }: Props) {
         className="dialog dialog--bet"
         role="dialog"
         aria-modal="true"
-        aria-label={isEdit ? 'Modifica scommessa' : 'Nuova scommessa'}
+        aria-label={pillLabel}
       >
         <header className="dialog__header">
-          <span className="pill pill--bet">
-            {isEdit ? 'Modifica scommessa' : 'Nuova scommessa'}
-          </span>
+          <span className={pillClass}>{pillLabel}</span>
           <button
             type="button"
             className="dialog__close"

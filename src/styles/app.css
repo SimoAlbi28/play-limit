@@ -938,6 +938,14 @@ input {
   color: var(--text-muted);
 }
 
+.history-row__desc {
+  font-size: 0.82rem;
+  color: var(--text);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .history-row__amount {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -974,6 +982,12 @@ input {
     align-items: center;
     padding: calc(env(safe-area-inset-top) + 24px) 12px 12px;
   }
+}
+
+.dialog-backdrop--center {
+  align-items: center;
+  padding: calc(env(safe-area-inset-top) + 24px) 12px
+    calc(env(safe-area-inset-bottom) + 24px);
 }
 
 .dialog {
@@ -1680,12 +1694,14 @@ input {
   background: rgba(251, 191, 36, 0.18);
 }
 
-.bet-history__status--won {
+.bet-history__status--won,
+.bet-history__status--vincita {
   background: var(--positive-soft);
   color: var(--positive-strong);
 }
 
-.bet-history__status--lost {
+.bet-history__status--lost,
+.bet-history__status--spesa {
   background: var(--negative-soft);
   color: var(--negative-strong);
 }
@@ -1734,6 +1750,16 @@ input {
 .pill--bet {
   background: rgba(106, 161, 255, 0.18);
   color: var(--accent);
+}
+
+.pill--spesa {
+  background: var(--negative-soft);
+  color: var(--negative-strong);
+}
+
+.pill--vincita {
+  background: var(--positive-soft);
+  color: var(--positive-strong);
 }
 
 .bet-form {

@@ -1,6 +1,6 @@
 export type TransactionType = 'spesa' | 'vincita'
 
-export type TransactionKind = 'initial'
+export type TransactionKind = 'initial' | 'standalone'
 
 export type Transaction = {
   id: string
@@ -8,6 +8,7 @@ export type Transaction = {
   amount: number
   createdAt: number
   kind?: TransactionKind
+  description?: string
   hidden?: boolean
 }
 
