@@ -20,8 +20,10 @@ const TAP_TOLERANCE = 6
 export function HistoryRow({ tx, isOpen, onOpenChange, onDelete, onEdit }: Props) {
   const [dragOffset, setDragOffset] = useState<number | null>(null)
   const startX = useRef<number | null>(null)
+  const startY = useRef<number | null>(null)
   const startedOpen = useRef(false)
   const maxAbsDx = useRef(0)
+  const maxAbsDy = useRef(0)
   const isSpesa = tx.type === 'spesa'
   const isInitial = tx.kind === 'initial'
   const Icon = isSpesa ? ArrowDownRight : ArrowUpRight
@@ -32,16 +34,20 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete, onEdit }: Props
 
   const handlePointerDown = (e: React.PointerEvent) => {
     startX.current = e.clientX
+    startY.current = e.clientY
     startedOpen.current = isOpen
     maxAbsDx.current = 0
+    maxAbsDy.current = 0
     setDragOffset(settledOffset)
     ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
   }
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (startX.current === null) return
+    if (startX.current === null || startY.current === null) return
     const dx = e.clientX - startX.current
+    const dy = e.clientY - startY.current
     if (Math.abs(dx) > maxAbsDx.current) maxAbsDx.current = Math.abs(dx)
+    if (Math.abs(dy) > maxAbsDy.current) maxAbsDy.current = Math.abs(dy)
     const base = startedOpen.current ? -MAX_SWIPE : 0
     const raw = base + dx
     let next: number
@@ -60,11 +66,13 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete, onEdit }: Props
   const handlePointerUp = () => {
     if (startX.current === null) return
     const current = dragOffset ?? 0
-    const moved = maxAbsDx.current
+    const movedX = maxAbsDx.current
+    const movedY = maxAbsDy.current
     startX.current = null
+    startY.current = null
     setDragOffset(null)
 
-    if (moved <= TAP_TOLERANCE) {
+    if (movedX <= TAP_TOLERANCE && movedY <= TAP_TOLERANCE) {
       if (startedOpen.current) {
         handleDelete()
       } else {
@@ -79,6 +87,14 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete, onEdit }: Props
     }
 
     onOpenChange(current <= -SWIPE_THRESHOLD)
+  }
+
+  const handlePointerCancel = () => {
+    startX.current = null
+    startY.current = null
+    maxAbsDx.current = 0
+    maxAbsDy.current = 0
+    setDragOffset(null)
   }
 
   const handleDelete = () => {
@@ -105,7 +121,7 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete, onEdit }: Props
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
       >
         <span
           className={`history-row__badge history-row__badge--${tx.type}`}

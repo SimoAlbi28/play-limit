@@ -203,6 +203,18 @@ function App() {
   const potentialBalance =
     Math.round((balance + totalPotentialWin) * 100) / 100
 
+  const handleReset = () => {
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith('playlimit.')) localStorage.removeItem(key)
+      }
+    } catch {
+      // ignore — proceed with reload anyway
+    }
+    window.location.reload()
+  }
+
   if (view === 'settings') {
     return (
       <div className="app">
@@ -212,6 +224,7 @@ function App() {
           onBack={() => setView('home')}
           onOpenBetHistory={() => setView('bet-history')}
           betHistoryCount={historyEntries.length}
+          onReset={handleReset}
         />
       </div>
     )
@@ -266,7 +279,7 @@ function App() {
         >
           <img src="/logo-playlimit-192.png" alt="" width={44} height={44} />
         </button>
-        <h1 className="topbar__title topbar__title--brand">playlimt</h1>
+        <h1 className="topbar__title topbar__title--brand">PlayLimit</h1>
         <button
           type="button"
           className="topbar__icon"

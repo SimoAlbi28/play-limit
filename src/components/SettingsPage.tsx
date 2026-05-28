@@ -1,10 +1,14 @@
+import { useState } from 'react'
 import {
+  AlertTriangle,
   ArrowLeft,
   ChevronRight,
   History as HistoryIcon,
   Monitor,
   Moon,
+  RefreshCw,
   Sun,
+  X,
 } from 'lucide-react'
 import type { Theme } from '../types'
 
@@ -14,6 +18,7 @@ type Props = {
   onBack: () => void
   onOpenBetHistory: () => void
   betHistoryCount: number
+  onReset: () => void
 }
 
 const THEMES: { value: Theme; label: string; Icon: typeof Sun }[] = [
@@ -28,7 +33,26 @@ export function SettingsPage({
   onBack,
   onOpenBetHistory,
   betHistoryCount,
+  onReset,
 }: Props) {
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [confirmText, setConfirmText] = useState('')
+
+  const openConfirm = () => {
+    setConfirmText('')
+    setConfirmOpen(true)
+  }
+
+  const cancelConfirm = () => {
+    setConfirmOpen(false)
+    setConfirmText('')
+  }
+
+  const handleResetConfirmed = () => {
+    if (confirmText.trim().toUpperCase() !== 'RESET') return
+    onReset()
+  }
+
   return (
     <div className="settings">
       <header className="topbar">
@@ -86,11 +110,89 @@ export function SettingsPage({
         </button>
       </section>
 
+      <div className="settings__reset">
+        <button
+          type="button"
+          className="btn btn--reset"
+          onClick={openConfirm}
+        >
+          <RefreshCw size={16} strokeWidth={2.4} />
+          Reset
+        </button>
+      </div>
+
       <footer className="app-footer">
         <p className="app-footer__text">
           <strong>PlayLimit</strong> · Conosci il tuo limite, gioca con la testa.
         </p>
       </footer>
+
+      {confirmOpen && (
+        <div
+          className="dialog-backdrop dialog-backdrop--center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) cancelConfirm()
+          }}
+        >
+          <div
+            className="dialog dialog--bet dialog--confirm"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Conferma reset"
+          >
+            <header className="dialog__header">
+              <span className="pill pill--danger">Conferma reset</span>
+              <button
+                type="button"
+                className="dialog__close"
+                onClick={cancelConfirm}
+                aria-label="Chiudi"
+              >
+                <X size={20} strokeWidth={2.5} />
+              </button>
+            </header>
+
+            <div className="bet-form">
+              <div className="confirm-block">
+                <p className="confirm-block__warning">
+                  <AlertTriangle size={20} strokeWidth={2.2} />
+                  <span>
+                    Stai per <strong>resettare completamente l'app</strong>.
+                    Questa operazione è <strong>irreversibile</strong>: tutti i
+                    dati andranno persi e non potranno essere recuperati. Per
+                    confermare, scrivi <strong>RESET</strong> qui sotto.
+                  </span>
+                </p>
+                <input
+                  className="confirm-block__input"
+                  value={confirmText}
+                  onChange={(e) => setConfirmText(e.target.value)}
+                  placeholder="RESET"
+                />
+              </div>
+            </div>
+
+            <div className="dialog__actions dialog__actions--sticky">
+              <button
+                type="button"
+                className="btn btn--cancel"
+                onClick={cancelConfirm}
+              >
+                Annulla
+              </button>
+              <button
+                type="button"
+                className="btn btn--reset"
+                disabled={confirmText.trim().toUpperCase() !== 'RESET'}
+                onClick={handleResetConfirmed}
+              >
+                <RefreshCw size={16} strokeWidth={2.4} />
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

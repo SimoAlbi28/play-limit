@@ -254,7 +254,6 @@ input {
   font-weight: 800;
   letter-spacing: 0.06em;
   line-height: 1;
-  text-transform: uppercase;
   background: linear-gradient(
     90deg,
     #4f7bff 0%,
@@ -1393,6 +1392,47 @@ input {
   color: white;
 }
 
+.btn--reset {
+  background: #fff;
+  color: #d92d20;
+  border: 1.5px solid #d92d20;
+  font-weight: 700;
+}
+
+.btn--reset:hover {
+  background: #fff5f5;
+}
+
+.btn--reset:active {
+  background: #ffe6e6;
+}
+
+.btn--reset:disabled {
+  background: #fff;
+  color: #d92d20;
+  border-color: #d92d20;
+}
+
+:root[data-theme='dark'] .btn--reset {
+  background: #000;
+  color: #ff5a4d;
+  border-color: #ff5a4d;
+}
+
+:root[data-theme='dark'] .btn--reset:hover {
+  background: #1a0606;
+}
+
+:root[data-theme='dark'] .btn--reset:active {
+  background: #2a0a0a;
+}
+
+:root[data-theme='dark'] .btn--reset:disabled {
+  background: #000;
+  color: #ff5a4d;
+  border-color: #ff5a4d;
+}
+
 .btn--icon {
   letter-spacing: 0.01em;
 }
@@ -1417,6 +1457,22 @@ input {
   align-items: center;
   gap: 14px;
   text-align: center;
+}
+
+.settings__reset {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding: 12px 0 4px;
+}
+
+.settings__reset + .app-footer {
+  margin-top: 0;
+  padding-top: 12px;
+}
+
+.settings__reset .btn--reset {
+  min-width: 140px;
 }
 
 .settings__section--meta {
