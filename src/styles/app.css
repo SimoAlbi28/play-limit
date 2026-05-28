@@ -43,7 +43,7 @@
 }
 
 .intro-logo__faint {
-  opacity: 0.22;
+  display: none;
 }
 
 .intro-logo__full {
@@ -2402,7 +2402,7 @@ input {
 }
 
 .history__restore {
-  margin: 4px auto 0;
+  margin: -4px auto 0;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -2421,7 +2421,7 @@ input {
 .history__restore--active {
   background: transparent;
   border: 1px dashed var(--info);
-  color: var(--info-strong);
+  color: var(--info);
 }
 
 .history__restore--active:hover {
@@ -2431,7 +2431,7 @@ input {
 }
 
 :root[data-theme='dark'] .history__restore--active {
-  color: #cfe0ff;
+  color: var(--info);
   border-color: var(--info);
 }
 

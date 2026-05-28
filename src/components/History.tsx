@@ -117,7 +117,7 @@ export function History({
         disabled={hiddenCount === 0}
       >
         <RotateCcw size={16} strokeWidth={2.3} />
-        Ripristina eliminati ({hiddenCount})
+        Ripristina nascosti ({hiddenCount})
       </button>
     </section>
   )
