@@ -101,7 +101,10 @@ export function History({
         <p className="history__hint">
           <span>Scorri a sinistra per nascondere la riga.</span>
           <span className="history__hint-sub">
-            Vai nella cronologia per eliminarla definitivamente.
+            Vai nella cronologia per eliminarle una a una.
+          </span>
+          <span className="history__hint-sub">
+            Vai nelle impostazioni per resettare l'app da 0.
           </span>
         </p>
       )}
