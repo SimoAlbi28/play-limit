@@ -114,24 +114,18 @@ export function useTransactions() {
     useMemo(() => {
       let spesa = 0
       let vincita = 0
-      let opSpesa = 0
-      let opVincita = 0
       let opCount = 0
       let hidden = 0
       for (const t of transactions) {
+        opCount += 1
         if (t.type === 'spesa') spesa += t.amount
         else vincita += t.amount
-        if (t.kind !== 'initial') {
-          opCount += 1
-          if (t.type === 'spesa') opSpesa += t.amount
-          else opVincita += t.amount
-        }
         if (t.hidden) hidden += 1
       }
       return {
         balance: Math.round((vincita - spesa) * 100) / 100,
-        totalSpesa: Math.round(opSpesa * 100) / 100,
-        totalVincita: Math.round(opVincita * 100) / 100,
+        totalSpesa: Math.round(spesa * 100) / 100,
+        totalVincita: Math.round(vincita * 100) / 100,
         operationsCount: opCount,
         hiddenCount: hidden,
       }
