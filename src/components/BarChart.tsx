@@ -1,4 +1,3 @@
-import { useScrub } from '../hooks/useScrub'
 import { niceTicks, type SpesaVincitaBucket } from '../utils/stats'
 import { formatEuro } from '../utils/format'
 
@@ -8,15 +7,13 @@ type Props = {
 }
 
 const W = 320
-const H = 200
+const H = 188
 const ML = 34
 const MR = 8
-const MT = 12
+const MT = 6
 const MB = 24
 
 export function BarChart({ title, buckets }: Props) {
-  const { ref, activeIndex, handlers } = useScrub(buckets.length, 'band')
-
   const hasData = buckets.some((b) => b.spesa > 0 || b.vincita > 0)
   if (buckets.length === 0 || !hasData) {
     return (
@@ -29,7 +26,7 @@ export function BarChart({ title, buckets }: Props) {
 
   const n = buckets.length
   const rawMax = Math.max(...buckets.flatMap((b) => [b.spesa, b.vincita]), 1)
-  const { ticks, max } = niceTicks(0, rawMax, 4)
+  const { ticks, max } = niceTicks(0, rawMax, 5)
 
   const plotL = ML
   const plotR = W - MR
@@ -37,8 +34,8 @@ export function BarChart({ title, buckets }: Props) {
   const baseline = H - MB
   const plotW = plotR - plotL
   const groupW = plotW / n
-  const barW = Math.min(14, groupW * 0.32)
-  const gap = 3
+  const barW = Math.min(26, groupW * 0.34)
+  const gap = Math.min(40, groupW * 0.22)
 
   const h = (v: number) => (v / (max || 1)) * (baseline - plotT)
   const y = (v: number) => baseline - h(v)
@@ -46,31 +43,15 @@ export function BarChart({ title, buckets }: Props) {
 
   const totalSpesa = buckets.reduce((s, b) => s + b.spesa, 0)
   const totalVincita = buckets.reduce((s, b) => s + b.vincita, 0)
-  const active = activeIndex != null ? buckets[activeIndex] : null
 
   return (
     <div className="chart-card">
       <p className="chart-card__title">{title}</p>
-      <div className="chart-card__readout">
-        <span className="chart-card__readout-label">
-          {active ? active.label : 'totale'}
-        </span>
-        <span className="chart-card__readout-vals">
-          <span className="neg">
-            {formatEuro(active ? active.spesa : totalSpesa)}
-          </span>
-          <span className="pos">
-            {formatEuro(active ? active.vincita : totalVincita)}
-          </span>
-        </span>
-      </div>
       <svg
-        ref={ref}
-        className="chart-svg"
+        className="chart-svg chart-svg--static"
         viewBox={`0 0 ${W} ${H}`}
         role="img"
         aria-label={title}
-        {...handlers}
       >
         {/* y grid + labels */}
         {ticks.map((t) => (
@@ -90,21 +71,10 @@ export function BarChart({ title, buckets }: Props) {
 
         {buckets.map((b, i) => {
           const cx = groupCx(i)
-          const dim = activeIndex != null && activeIndex !== i ? 0.4 : 1
           const sH = h(b.spesa)
           const vH = h(b.vincita)
           return (
-            <g key={i} opacity={dim}>
-              {activeIndex === i && (
-                <rect
-                  className="chart-band"
-                  x={cx - groupW / 2}
-                  y={plotT - 4}
-                  width={groupW}
-                  height={baseline - plotT + 4}
-                  rx={4}
-                />
-              )}
+            <g key={i}>
               <rect
                 className="chart-bar chart-bar--neg"
                 x={cx - barW - gap / 2}
@@ -130,15 +100,24 @@ export function BarChart({ title, buckets }: Props) {
           )
         })}
       </svg>
-      <div className="chart-legend">
-        <span>
-          <i className="dot dot--neg" />
-          Spese
-        </span>
-        <span>
-          <i className="dot dot--pos" />
-          Vincite
-        </span>
+      <div className="bar-totals">
+        <span className="bar-totals__period">Totale</span>
+        <div className="bar-totals__row">
+          <div className="bar-totals__item">
+            <span className="bar-totals__name">
+              <i className="dot dot--neg" />
+              Spese
+            </span>
+            <strong className="neg">{formatEuro(totalSpesa)}</strong>
+          </div>
+          <div className="bar-totals__item">
+            <span className="bar-totals__name">
+              <i className="dot dot--pos" />
+              Vincite
+            </span>
+            <strong className="pos">{formatEuro(totalVincita)}</strong>
+          </div>
+        </div>
       </div>
     </div>
   )

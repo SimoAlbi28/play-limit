@@ -11,6 +11,7 @@ type ScrubMode = 'nearest' | 'band'
  */
 export function useScrub(count: number, mode: ScrubMode) {
   const ref = useRef<SVGSVGElement>(null)
+  const activeRef = useRef(false)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   const update = useCallback(
@@ -28,20 +29,22 @@ export function useScrub(count: number, mode: ScrubMode) {
     [count, mode],
   )
 
-  const clear = useCallback(() => setActiveIndex(null), [])
+  const clear = useCallback(() => {
+    activeRef.current = false
+    setActiveIndex(null)
+  }, [])
 
   const handlers = {
     onPointerDown: (e: React.PointerEvent<SVGSVGElement>) => {
       ref.current?.setPointerCapture(e.pointerId)
+      activeRef.current = true
       update(e.clientX)
     },
     onPointerMove: (e: React.PointerEvent<SVGSVGElement>) => {
-      if (e.pointerType === 'mouse' ? e.buttons === 0 : e.pressure === 0) {
-        // hover for mouse, require contact for touch/pen
-        if (e.pointerType === 'mouse') update(e.clientX)
-        return
+      // Mouse: segue al passaggio (hover). Touch/pen: solo mentre è premuto.
+      if (e.pointerType === 'mouse' || activeRef.current) {
+        update(e.clientX)
       }
-      update(e.clientX)
     },
     onPointerUp: clear,
     onPointerCancel: clear,

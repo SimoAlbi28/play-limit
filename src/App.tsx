@@ -50,6 +50,7 @@ function App() {
   const { sortMode, setSortMode } = useSortMode()
 
   const [view, setView] = useState<View>('home')
+  const [statsFrom, setStatsFrom] = useState<'home' | 'settings'>('home')
   const [showBetDialog, setShowBetDialog] = useState(false)
   const [showBalanceDialog, setShowBalanceDialog] = useState(false)
   const [editingBet, setEditingBet] = useState<Bet | null>(null)
@@ -229,7 +230,10 @@ function App() {
           onThemeChange={setTheme}
           onBack={() => setView('home')}
           onOpenBetHistory={() => setView('bet-history')}
-          onOpenStats={() => setView('stats')}
+          onOpenStats={() => {
+            setStatsFrom('settings')
+            setView('stats')
+          }}
           betHistoryCount={historyEntries.length}
           onReset={handleReset}
         />
@@ -255,7 +259,7 @@ function App() {
         <StatsPage
           transactions={transactions}
           bets={bets}
-          onBack={() => setView('settings')}
+          onBack={() => setView(statsFrom)}
         />
       </div>
     )
@@ -316,6 +320,10 @@ function App() {
         <Balance
           balance={balance}
           potentialBalance={potentialBalance}
+          onOpenStats={() => {
+            setStatsFrom('home')
+            setView('stats')
+          }}
           onEdit={
             transactions.length === 0 && bets.length === 0
               ? () => setShowBalanceDialog(true)

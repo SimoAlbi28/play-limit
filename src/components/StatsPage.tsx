@@ -9,7 +9,7 @@ import {
   type Period,
 } from '../utils/stats'
 import { PeriodFilter } from './PeriodFilter'
-import { LineChart } from './LineChart'
+import { BalanceChart } from './BalanceChart'
 import { BarChart } from './BarChart'
 import { DonutChart } from './DonutChart'
 
@@ -49,8 +49,11 @@ export function StatsPage({ transactions, bets, onBack }: Props) {
       <PeriodFilter period={period} onChange={setPeriod} />
 
       <div className="stats-charts">
-        <LineChart title="Andamento del saldo" points={series} />
+        <hr className="chart-sep" />
+        <BalanceChart title="Andamento del saldo" points={series} />
+        <hr className="chart-sep" />
         <BarChart title="Spese vs Vincite" buckets={buckets} />
+        <hr className="chart-sep" />
         <DonutChart title="Esiti scommesse" outcomes={outcomes} />
       </div>
     </div>

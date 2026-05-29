@@ -5,6 +5,7 @@ import {
   Sparkles,
   Pencil,
   Wallet,
+  BarChart3,
 } from 'lucide-react'
 import { formatEuro } from '../utils/format'
 
@@ -12,9 +13,10 @@ type Props = {
   balance: number
   potentialBalance?: number
   onEdit?: () => void
+  onOpenStats?: () => void
 }
 
-export function Balance({ balance, potentialBalance, onEdit }: Props) {
+export function Balance({ balance, potentialBalance, onEdit, onOpenStats }: Props) {
   const sign = balance > 0 ? 'positive' : balance < 0 ? 'negative' : 'zero'
   const Icon = balance > 0 ? TrendingUp : balance < 0 ? TrendingDown : Minus
   const showPotential =
@@ -60,18 +62,37 @@ export function Balance({ balance, potentialBalance, onEdit }: Props) {
     </>
   )
 
+  const statsBtn = onOpenStats && (
+    <button
+      type="button"
+      className="balance__stats"
+      onClick={onOpenStats}
+      aria-label="Apri statistiche"
+    >
+      <BarChart3 size={22} strokeWidth={2.2} />
+    </button>
+  )
+
   if (!onEdit) {
-    return <div className={`balance balance--${sign}`}>{inner}</div>
+    return (
+      <div className="balance-wrap">
+        {statsBtn}
+        <div className={`balance balance--${sign}`}>{inner}</div>
+      </div>
+    )
   }
 
   return (
-    <button
-      type="button"
-      className={`balance balance--${sign} balance--button`}
-      onClick={onEdit}
-      aria-label="Imposta saldo iniziale"
-    >
-      {inner}
-    </button>
+    <div className="balance-wrap">
+      {statsBtn}
+      <button
+        type="button"
+        className={`balance balance--${sign} balance--button`}
+        onClick={onEdit}
+        aria-label="Imposta saldo iniziale"
+      >
+        {inner}
+      </button>
+    </div>
   )
 }
