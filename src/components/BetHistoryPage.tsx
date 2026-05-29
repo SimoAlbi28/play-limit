@@ -21,7 +21,6 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const [confirmText, setConfirmText] = useState('')
 
   const allSelected = useMemo(
     () => entries.length > 0 && selectedIds.size === entries.length,
@@ -54,20 +53,16 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
 
   const openConfirm = () => {
     if (selectedIds.size === 0) return
-    setConfirmText('')
     setConfirmOpen(true)
   }
 
   const cancelConfirm = () => {
     setConfirmOpen(false)
-    setConfirmText('')
   }
 
   const handleDeleteConfirmed = () => {
-    if (confirmText.trim().toUpperCase() !== 'ELIMINA') return
     onRemoveEntries(Array.from(selectedIds))
     setConfirmOpen(false)
-    setConfirmText('')
     setSelectionMode(false)
     setSelectedIds(new Set())
   }
@@ -144,18 +139,12 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
             {t.type === 'spesa' ? 'Spesa' : 'Vincita'}
           </span>
         )}
-        {isInitial ? (
-          <div className="bet-history__meta" aria-hidden="true" />
-        ) : (
-          <div className="bet-history__meta">
-            {t.description && t.description.trim() && (
-              <span className="bet-history__desc">{t.description}</span>
-            )}
-            <span className="bet-history__date">
-              {formatDate(t.createdAt)}
-            </span>
-          </div>
-        )}
+        <div className="bet-history__meta">
+          {t.description && t.description.trim() && (
+            <span className="bet-history__desc">{t.description}</span>
+          )}
+          <span className="bet-history__date">{formatDate(t.createdAt)}</span>
+        </div>
         <div className="bet-history__amounts">
           <span
             className={
@@ -310,16 +299,9 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
                       {selectedIds.size === 1 ? 'e' : 'i'}
                     </strong>
                     . Questa operazione è <strong>irreversibile</strong>: i dati
-                    non potranno essere recuperati. Per confermare, scrivi{' '}
-                    <strong>ELIMINA</strong> qui sotto.
+                    non potranno essere recuperati.
                   </span>
                 </p>
-                <input
-                  className="confirm-block__input"
-                  value={confirmText}
-                  onChange={(e) => setConfirmText(e.target.value)}
-                  placeholder="ELIMINA"
-                />
               </div>
             </div>
 
@@ -334,7 +316,6 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
               <button
                 type="button"
                 className="btn btn--delete"
-                disabled={confirmText.trim().toUpperCase() !== 'ELIMINA'}
                 onClick={handleDeleteConfirmed}
               >
                 <Trash2 size={16} strokeWidth={2.4} />

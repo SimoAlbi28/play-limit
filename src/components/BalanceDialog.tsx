@@ -1,19 +1,47 @@
-import { useEffect, useState } from 'react'
-import { Minus, Plus, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Minus, Plus, RotateCcw, X } from 'lucide-react'
 import { AmountInput, parseAmount } from './AmountInput'
 import { formatEuro } from '../utils/format'
 
 type Props = {
   currentBalance: number
   onCancel: () => void
-  onConfirm: (newBalance: number) => void
+  onConfirm: (data: {
+    newBalance: number
+    createdAt: number
+    description: string
+  }) => void
 }
 
 const PRESETS = [10, 50, 100, 250, 500, 1000] as const
+const DESC_MAX = 150
 
 function formatAmount(value: number): string {
   if (!value) return ''
   return String(Math.round(value * 100) / 100).replace('.', ',')
+}
+
+function todayISO(): string {
+  const d = new Date()
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
+
+function isoToTimestampNow(iso: string, fallback: number = Date.now()): number {
+  if (!iso) return fallback
+  const [y, m, d] = iso.split('-').map(Number)
+  if (!y || !m || !d) return fallback
+  const now = new Date()
+  return new Date(
+    y,
+    m - 1,
+    d,
+    now.getHours(),
+    now.getMinutes(),
+    now.getSeconds(),
+  ).getTime()
 }
 
 export function BalanceDialog({
@@ -25,10 +53,20 @@ export function BalanceDialog({
   const [sign, setSign] = useState<'+' | '-'>(
     currentBalance < 0 ? '-' : '+',
   )
+  const [date, setDate] = useState(todayISO())
+  const [description, setDescription] = useState('')
+  const descRef = useRef<HTMLTextAreaElement>(null)
 
   const amount = parseAmount(raw)
   const target = sign === '+' ? amount : -amount
   const diff = Math.round((target - currentBalance) * 100) / 100
+
+  useEffect(() => {
+    const el = descRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [description])
 
   useEffect(() => {
     const { body, documentElement } = document
@@ -54,13 +92,22 @@ export function BalanceDialog({
   }, [])
 
   const handleConfirm = () => {
-    onConfirm(target)
+    onConfirm({
+      newBalance: target,
+      createdAt: isoToTimestampNow(date),
+      description: description.trim(),
+    })
   }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onCancel()
-      if (e.key === 'Enter') handleConfirm()
+      if (
+        e.key === 'Enter' &&
+        document.activeElement?.tagName !== 'TEXTAREA'
+      ) {
+        handleConfirm()
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -135,6 +182,56 @@ export function BalanceDialog({
               tone={sign === '+' ? 'vincita' : 'spesa'}
               ariaLabel="Importo saldo"
             />
+          </div>
+
+          <div className="bet-field">
+            <span className="bet-field__label">Data</span>
+            <div className="bet-field__row">
+              <input
+                className="bet-field__input bet-field__input--date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+              <button
+                type="button"
+                className="bet-field__reset"
+                onClick={() => setDate(todayISO())}
+                aria-label="Reimposta data a oggi"
+                disabled={date === todayISO()}
+              >
+                <RotateCcw size={16} strokeWidth={2.4} />
+              </button>
+            </div>
+          </div>
+
+          <div className="bet-field">
+            <span className="bet-field__label">
+              Descrizione
+              <span className="bet-field__counter">
+                {description.length}/{DESC_MAX}
+              </span>
+            </span>
+            <div className="bet-field__row">
+              <textarea
+                ref={descRef}
+                className="bet-field__input bet-field__input--text"
+                placeholder="es. Saldo iniziale"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={DESC_MAX}
+                rows={1}
+              />
+              <button
+                type="button"
+                className="bet-field__reset"
+                onClick={() => setDescription('')}
+                aria-label="Azzera descrizione"
+                disabled={description.length === 0}
+              >
+                <X size={16} strokeWidth={2.4} />
+              </button>
+            </div>
           </div>
 
           <div className="bet-field">

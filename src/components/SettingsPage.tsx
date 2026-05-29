@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   AlertTriangle,
   ArrowLeft,
+  BarChart3,
   ChevronRight,
   History as HistoryIcon,
   Monitor,
@@ -17,6 +18,7 @@ type Props = {
   onThemeChange: (t: Theme) => void
   onBack: () => void
   onOpenBetHistory: () => void
+  onOpenStats: () => void
   betHistoryCount: number
   onReset: () => void
 }
@@ -32,6 +34,7 @@ export function SettingsPage({
   onThemeChange,
   onBack,
   onOpenBetHistory,
+  onOpenStats,
   betHistoryCount,
   onReset,
 }: Props) {
@@ -87,10 +90,31 @@ export function SettingsPage({
             </button>
           ))}
         </div>
+        {theme === 'auto' && (
+          <p className="theme-switch__hint">
+            In automatico: <strong>Chiaro</strong> dalle 06:00 alle 19:59 ·{' '}
+            <strong>Scuro</strong> dalle 20:00 alle 05:59
+          </p>
+        )}
       </section>
 
       <section className="settings__section">
         <h2 className="settings__heading">Scommesse</h2>
+        <button
+          type="button"
+          className="settings__row"
+          onClick={onOpenStats}
+        >
+          <span className="settings__row-icon">
+            <BarChart3 size={18} strokeWidth={2.2} />
+          </span>
+          <span className="settings__row-label">Statistiche</span>
+          <ChevronRight
+            className="settings__row-chevron"
+            size={18}
+            strokeWidth={2.2}
+          />
+        </button>
         <button
           type="button"
           className="settings__row"

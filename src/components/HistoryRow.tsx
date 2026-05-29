@@ -133,14 +133,12 @@ export function HistoryRow({ tx, isOpen, onOpenChange, onDelete, onEdit }: Props
           <span className={`history-row__type history-row__type--${tx.type}`}>
             {isInitial ? 'Saldo iniziale' : isSpesa ? 'Spesa' : 'Vincita'}
           </span>
-          {!isInitial && tx.description && tx.description.trim() && (
+          {tx.description && tx.description.trim() && (
             <span className="history-row__desc">{tx.description}</span>
           )}
-          {!isInitial && (
-            <span className="history-row__date">
-              {formatDate(tx.createdAt)}
-            </span>
-          )}
+          <span className="history-row__date">
+            {formatDate(tx.createdAt)}
+          </span>
         </div>
         <div
           className={`history-row__amount history-row__amount--${tx.type}`}

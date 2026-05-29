@@ -19,8 +19,9 @@ import { PendingBets } from './components/PendingBets'
 import { BetHistoryPage } from './components/BetHistoryPage'
 import { History } from './components/History'
 import { SettingsPage } from './components/SettingsPage'
+import { StatsPage } from './components/StatsPage'
 
-type View = 'home' | 'settings' | 'bet-history'
+type View = 'home' | 'settings' | 'bet-history' | 'stats'
 
 function App() {
   const {
@@ -191,12 +192,17 @@ function App() {
     setEditingTx(null)
   }
 
-  const handleSetBalance = (target: number) => {
-    const diff = Math.round((target - balance) * 100) / 100
+  const handleSetBalance = (data: {
+    newBalance: number
+    createdAt: number
+    description: string
+  }) => {
+    const diff = Math.round((data.newBalance - balance) * 100) / 100
+    const desc = data.description.trim() || undefined
     if (diff > 0)
-      addTransaction('vincita', diff, undefined, undefined, 'initial')
+      addTransaction('vincita', diff, data.createdAt, undefined, 'initial', desc)
     else if (diff < 0)
-      addTransaction('spesa', -diff, undefined, undefined, 'initial')
+      addTransaction('spesa', -diff, data.createdAt, undefined, 'initial', desc)
     setShowBalanceDialog(false)
   }
 
@@ -223,6 +229,7 @@ function App() {
           onThemeChange={setTheme}
           onBack={() => setView('home')}
           onOpenBetHistory={() => setView('bet-history')}
+          onOpenStats={() => setView('stats')}
           betHistoryCount={historyEntries.length}
           onReset={handleReset}
         />
@@ -237,6 +244,18 @@ function App() {
           entries={historyEntries}
           onBack={() => setView('settings')}
           onRemoveEntries={handleRemoveEntries}
+        />
+      </div>
+    )
+  }
+
+  if (view === 'stats') {
+    return (
+      <div className="app">
+        <StatsPage
+          transactions={transactions}
+          bets={bets}
+          onBack={() => setView('settings')}
         />
       </div>
     )

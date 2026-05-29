@@ -1,4 +1,11 @@
-import { TrendingDown, TrendingUp, Minus, Sparkles, Pencil } from 'lucide-react'
+import {
+  TrendingDown,
+  TrendingUp,
+  Minus,
+  Sparkles,
+  Pencil,
+  Wallet,
+} from 'lucide-react'
 import { formatEuro } from '../utils/format'
 
 type Props = {
@@ -23,6 +30,9 @@ export function Balance({ balance, potentialBalance, onEdit }: Props) {
       : 'zero'
   const inner = (
     <>
+      <span className="balance__icon" aria-hidden="true">
+        <Wallet size={22} strokeWidth={2.2} />
+      </span>
       <span className="balance__label">
         <Icon size={14} strokeWidth={2.5} />
         Saldo

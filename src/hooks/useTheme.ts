@@ -9,13 +9,14 @@ function loadTheme(): Theme {
   return 'auto'
 }
 
+// Auto: chiaro tra le 06:00 e le 19:59, scuro tra le 20:00 e le 05:59.
+function resolveAuto(): 'light' | 'dark' {
+  const hour = new Date().getHours()
+  return hour >= 6 && hour < 20 ? 'light' : 'dark'
+}
+
 function applyTheme(theme: Theme) {
-  const resolved =
-    theme === 'auto'
-      ? window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light'
-      : theme
+  const resolved = theme === 'auto' ? resolveAuto() : theme
   document.documentElement.dataset.theme = resolved
 }
 
@@ -27,10 +28,17 @@ export function useTheme() {
     localStorage.setItem(STORAGE_KEY, theme)
 
     if (theme !== 'auto') return
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = () => applyTheme('auto')
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
+    // Ricontrolla ogni minuto così cambia da solo alle 06:00 e alle 20:00,
+    // e quando l'app torna in primo piano (i timer in background vengono sospesi).
+    const reapply = () => applyTheme('auto')
+    const id = window.setInterval(reapply, 60_000)
+    document.addEventListener('visibilitychange', reapply)
+    window.addEventListener('focus', reapply)
+    return () => {
+      window.clearInterval(id)
+      document.removeEventListener('visibilitychange', reapply)
+      window.removeEventListener('focus', reapply)
+    }
   }, [theme])
 
   return { theme, setTheme: setThemeState }

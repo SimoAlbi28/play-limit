@@ -113,7 +113,7 @@ export function TransactionDialog({ tx, onCancel, onConfirm }: Props) {
     onConfirm({
       amount,
       createdAt,
-      description: isInitial ? undefined : description.trim(),
+      description: description.trim(),
       type: isInitial ? type : tx.type,
     })
   }
@@ -225,36 +225,34 @@ export function TransactionDialog({ tx, onCancel, onConfirm }: Props) {
             </div>
           </div>
 
-          {!isInitial && (
-            <div className="bet-field">
-              <span className="bet-field__label">
-                Descrizione
-                <span className="bet-field__counter">
-                  {description.length}/{DESC_MAX}
-                </span>
+          <div className="bet-field">
+            <span className="bet-field__label">
+              Descrizione
+              <span className="bet-field__counter">
+                {description.length}/{DESC_MAX}
               </span>
-              <div className="bet-field__row">
-                <textarea
-                  ref={descRef}
-                  className="bet-field__input bet-field__input--text"
-                  placeholder="…"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  maxLength={DESC_MAX}
-                  rows={1}
-                />
-                <button
-                  type="button"
-                  className="bet-field__reset"
-                  onClick={() => setDescription('')}
-                  aria-label="Azzera descrizione"
-                  disabled={description.length === 0}
-                >
-                  <X size={16} strokeWidth={2.4} />
-                </button>
-              </div>
+            </span>
+            <div className="bet-field__row">
+              <textarea
+                ref={descRef}
+                className="bet-field__input bet-field__input--text"
+                placeholder={isInitial ? 'es. Saldo iniziale' : '…'}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={DESC_MAX}
+                rows={1}
+              />
+              <button
+                type="button"
+                className="bet-field__reset"
+                onClick={() => setDescription('')}
+                aria-label="Azzera descrizione"
+                disabled={description.length === 0}
+              >
+                <X size={16} strokeWidth={2.4} />
+              </button>
             </div>
-          )}
+          </div>
         </div>
 
         <div className="dialog__actions dialog__actions--sticky">

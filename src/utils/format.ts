@@ -24,3 +24,12 @@ const dateFormatter = new Intl.DateTimeFormat('it-IT', {
 export function formatDate(ts: number): string {
   return dateFormatter.format(new Date(ts)).replace(', ', ' - ')
 }
+
+const shortDateFormatter = new Intl.DateTimeFormat('it-IT', {
+  day: '2-digit',
+  month: 'short',
+})
+
+export function formatDateShort(ts: number): string {
+  return shortDateFormatter.format(new Date(ts))
+}
