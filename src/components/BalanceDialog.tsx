@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Minus, Plus, RotateCcw, X } from 'lucide-react'
+import { Minus, Plus, X } from 'lucide-react'
 import { AmountInput, parseAmount } from './AmountInput'
 import { formatEuro } from '../utils/format'
 
@@ -21,29 +21,6 @@ function formatAmount(value: number): string {
   return String(Math.round(value * 100) / 100).replace('.', ',')
 }
 
-function todayISO(): string {
-  const d = new Date()
-  const yyyy = d.getFullYear()
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
-}
-
-function isoToTimestampNow(iso: string, fallback: number = Date.now()): number {
-  if (!iso) return fallback
-  const [y, m, d] = iso.split('-').map(Number)
-  if (!y || !m || !d) return fallback
-  const now = new Date()
-  return new Date(
-    y,
-    m - 1,
-    d,
-    now.getHours(),
-    now.getMinutes(),
-    now.getSeconds(),
-  ).getTime()
-}
-
 export function BalanceDialog({
   currentBalance,
   onCancel,
@@ -53,7 +30,6 @@ export function BalanceDialog({
   const [sign, setSign] = useState<'+' | '-'>(
     currentBalance < 0 ? '-' : '+',
   )
-  const [date, setDate] = useState(todayISO())
   const [description, setDescription] = useState('')
   const descRef = useRef<HTMLTextAreaElement>(null)
 
@@ -94,7 +70,9 @@ export function BalanceDialog({
   const handleConfirm = () => {
     onConfirm({
       newBalance: target,
-      createdAt: isoToTimestampNow(date),
+      // Il saldo iniziale non ha una data scelta dall'utente: usiamo il
+      // momento di creazione solo come riferimento interno per i grafici.
+      createdAt: Date.now(),
       description: description.trim(),
     })
   }
@@ -182,27 +160,6 @@ export function BalanceDialog({
               tone={sign === '+' ? 'vincita' : 'spesa'}
               ariaLabel="Importo saldo"
             />
-          </div>
-
-          <div className="bet-field">
-            <span className="bet-field__label">Data</span>
-            <div className="bet-field__row">
-              <input
-                className="bet-field__input bet-field__input--date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-              <button
-                type="button"
-                className="bet-field__reset"
-                onClick={() => setDate(todayISO())}
-                aria-label="Reimposta data a oggi"
-                disabled={date === todayISO()}
-              >
-                <RotateCcw size={16} strokeWidth={2.4} />
-              </button>
-            </div>
           </div>
 
           <div className="bet-field">

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import {
   AlertTriangle,
   ArrowLeft,
@@ -9,12 +9,23 @@ import {
   X,
 } from 'lucide-react'
 import type { HistoryEntry } from '../App'
-import { formatDate, formatEuro } from '../utils/format'
+import { formatDate, formatDayLabel, formatEuro } from '../utils/format'
 
 type Props = {
   entries: HistoryEntry[]
   onBack: () => void
   onRemoveEntries: (ids: string[]) => void
+}
+
+// Chiave del giorno di una voce (null per il saldo iniziale, che non ha data).
+function entryDayKey(entry: HistoryEntry): string | null {
+  if (entry.kind === 'tx' && entry.tx.kind === 'initial') return null
+  const ts =
+    entry.kind === 'bet'
+      ? (entry.bet.resolvedAt ?? entry.bet.createdAt)
+      : entry.tx.createdAt
+  const d = new Date(ts)
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
 }
 
 export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
@@ -143,7 +154,9 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
           {t.description && t.description.trim() && (
             <span className="bet-history__desc">{t.description}</span>
           )}
-          <span className="bet-history__date">{formatDate(t.createdAt)}</span>
+          {!isInitial && (
+            <span className="bet-history__date">{formatDate(t.createdAt)}</span>
+          )}
         </div>
         <div className="bet-history__amounts">
           <span
@@ -179,8 +192,16 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
         </p>
       ) : (
         <ul className="bet-history__list">
-          {entries.map((entry) => {
+          {entries.map((entry, i) => {
             const checked = selectedIds.has(entry.id)
+            const dayKey = entryDayKey(entry)
+            const prevKey = i > 0 ? entryDayKey(entries[i - 1]) : null
+            const showDivider = i === 0 || dayKey !== prevKey
+            const dayTs =
+              entry.kind === 'bet'
+                ? (entry.bet.resolvedAt ?? entry.bet.createdAt)
+                : entry.tx.createdAt
+            const dayLabel = dayKey ? formatDayLabel(dayTs) : 'Saldo iniziale'
             const statusClass =
               entry.kind === 'bet'
                 ? entry.bet.status === 'pending'
@@ -197,8 +218,8 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
             } ${selectionMode ? 'bet-history__row--selectable' : ''} ${
               checked ? 'is-selected' : ''
             }`
-            return selectionMode ? (
-              <li key={entry.id} className="bet-history__row-wrap">
+            const row = selectionMode ? (
+              <li className="bet-history__row-wrap">
                 <button
                   type="button"
                   className={className}
@@ -209,9 +230,19 @@ export function BetHistoryPage({ entries, onBack, onRemoveEntries }: Props) {
                 </button>
               </li>
             ) : (
-              <li key={entry.id} className={className}>
-                {renderInner(entry, checked)}
-              </li>
+              <li className={className}>{renderInner(entry, checked)}</li>
+            )
+            return (
+              <Fragment key={entry.id}>
+                {showDivider && (
+                  <li className="bet-history__day-sep" aria-hidden="true">
+                    <span className="bet-history__day-sep-label">
+                      {dayLabel}
+                    </span>
+                  </li>
+                )}
+                {row}
+              </Fragment>
             )
           })}
         </ul>

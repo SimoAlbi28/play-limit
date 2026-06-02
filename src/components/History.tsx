@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { RotateCcw } from 'lucide-react'
 import type { SortMode, Transaction } from '../types'
+import { formatDayLabel } from '../utils/format'
 import { HistoryRow } from './HistoryRow'
 import { SortFilter } from './SortFilter'
 
@@ -12,6 +13,13 @@ type Props = {
   onEdit: (tx: Transaction) => void
   hiddenCount: number
   onRestoreHidden: () => void
+}
+
+// Chiave del giorno (null per il saldo iniziale, che non ha data).
+function dayKeyOf(tx: Transaction): string | null {
+  if (tx.kind === 'initial') return null
+  const d = new Date(tx.createdAt)
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
 }
 
 function sortTransactions(list: Transaction[], mode: SortMode): Transaction[] {
@@ -35,7 +43,11 @@ function sortTransactions(list: Transaction[], mode: SortMode): Transaction[] {
       })
       break
   }
-  return sorted
+  // Il saldo iniziale resta sempre in fondo, in ogni modalità di ordinamento.
+  return [
+    ...sorted.filter((t) => t.kind !== 'initial'),
+    ...sorted.filter((t) => t.kind === 'initial'),
+  ]
 }
 
 export function History({
@@ -85,16 +97,37 @@ export function History({
         </div>
       ) : (
         <ul className="history__list">
-          {sorted.map((tx) => (
-            <HistoryRow
-              key={tx.id}
-              tx={tx}
-              isOpen={openId === tx.id}
-              onOpenChange={(open) => setOpenId(open ? tx.id : null)}
-              onDelete={onDelete}
-              onEdit={onEdit}
-            />
-          ))}
+          {sorted.map((tx, i) => {
+            const row = (
+              <HistoryRow
+                key={tx.id}
+                tx={tx}
+                isOpen={openId === tx.id}
+                onOpenChange={(open) => setOpenId(open ? tx.id : null)}
+                onDelete={onDelete}
+                onEdit={onEdit}
+              />
+            )
+            // Le linee separatrici per data hanno senso solo in ordine cronologico.
+            if (sortMode !== 'date') return row
+            const dayKey = dayKeyOf(tx)
+            const prevKey = i > 0 ? dayKeyOf(sorted[i - 1]) : null
+            const showSep = i === 0 || dayKey !== prevKey
+            const label =
+              tx.kind === 'initial'
+                ? 'Saldo iniziale'
+                : formatDayLabel(tx.createdAt)
+            return (
+              <Fragment key={tx.id}>
+                {showSep && (
+                  <li className="history__day-sep" aria-hidden="true">
+                    <span className="history__day-sep-label">{label}</span>
+                  </li>
+                )}
+                {row}
+              </Fragment>
+            )
+          })}
         </ul>
       )}
       {sorted.length > 0 && (

@@ -153,7 +153,13 @@ function App() {
       if (linkedTxIds.has(t.id)) continue
       list.push({ kind: 'tx', id: t.id, sortAt: t.createdAt, tx: t })
     }
-    list.sort((a, b) => b.sortAt - a.sortAt)
+    list.sort((a, b) => {
+      const aInitial = a.kind === 'tx' && a.tx.kind === 'initial'
+      const bInitial = b.kind === 'tx' && b.tx.kind === 'initial'
+      // Il saldo iniziale resta sempre in fondo (la voce più vecchia).
+      if (aInitial !== bInitial) return aInitial ? 1 : -1
+      return b.sortAt - a.sortAt
+    })
     return list
   }, [bets, transactions])
 

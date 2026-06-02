@@ -1571,6 +1571,10 @@ input {
   text-align: center;
 }
 
+.theme-switch__hint-row {
+  display: block;
+}
+
 .theme-switch__hint strong {
   color: var(--text-muted);
   font-weight: 700;
@@ -1914,6 +1918,39 @@ input {
   gap: 6px;
 }
 
+.bet-history__day-sep,
+.history__day-sep {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 4px 2px;
+}
+
+.bet-history__day-sep:first-child,
+.history__day-sep:first-child {
+  margin-top: 0;
+}
+
+.bet-history__day-sep::before,
+.bet-history__day-sep::after,
+.history__day-sep::before,
+.history__day-sep::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.bet-history__day-sep-label,
+.history__day-sep-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
 .bet-history__row {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -1971,9 +2008,9 @@ input {
   font-size: 0.92rem;
   font-weight: 600;
   color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .bet-history__date {
@@ -2777,6 +2814,18 @@ input {
   pointer-events: none;
 }
 
+.bar-chart-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chart-bar-svg {
+  /* lo scroll orizzontale è gestito dal contenitore */
+  touch-action: pan-x;
+  pointer-events: auto;
+}
+
 .chart-grid {
   stroke: var(--border);
   stroke-width: 1.5;
@@ -2852,11 +2901,36 @@ input {
   stroke: var(--positive);
 }
 
+.chart-bar {
+  cursor: pointer;
+  transition: opacity 120ms ease;
+}
 .chart-bar--neg {
   fill: var(--negative);
 }
 .chart-bar--pos {
   fill: var(--positive);
+}
+.chart-bar.is-active {
+  opacity: 1;
+}
+.chart-bar-svg:has(.chart-bar.is-active) .chart-bar:not(.is-active) {
+  opacity: 0.4;
+}
+
+.bar-tip {
+  font-size: 11px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: var(--bg-elev);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+.bar-tip.neg {
+  fill: var(--negative-strong);
+}
+.bar-tip.pos {
+  fill: var(--positive-strong);
 }
 
 .chart-band {

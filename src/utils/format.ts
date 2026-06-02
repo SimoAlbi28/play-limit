@@ -33,3 +33,14 @@ const shortDateFormatter = new Intl.DateTimeFormat('it-IT', {
 export function formatDateShort(ts: number): string {
   return shortDateFormatter.format(new Date(ts))
 }
+
+const dayLabelFormatter = new Intl.DateTimeFormat('it-IT', {
+  weekday: 'short',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+})
+
+export function formatDayLabel(ts: number): string {
+  return dayLabelFormatter.format(new Date(ts))
+}

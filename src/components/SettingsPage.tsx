@@ -92,8 +92,13 @@ export function SettingsPage({
         </div>
         {theme === 'auto' && (
           <p className="theme-switch__hint">
-            In automatico: <strong>Chiaro</strong> dalle 06:00 alle 19:59 ·{' '}
-            <strong>Scuro</strong> dalle 20:00 alle 05:59
+            In automatico:
+            <span className="theme-switch__hint-row">
+              <strong>Chiaro</strong> dalle 06:00 alle 19:59
+            </span>
+            <span className="theme-switch__hint-row">
+              <strong>Scuro</strong> dalle 20:00 alle 05:59
+            </span>
           </p>
         )}
       </section>

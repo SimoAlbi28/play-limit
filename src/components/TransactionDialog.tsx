@@ -204,26 +204,28 @@ export function TransactionDialog({ tx, onCancel, onConfirm }: Props) {
             />
           </div>
 
-          <div className="bet-field">
-            <span className="bet-field__label">Data</span>
-            <div className="bet-field__row">
-              <input
-                className="bet-field__input bet-field__input--date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-              <button
-                type="button"
-                className="bet-field__reset"
-                onClick={() => setDate(todayISO())}
-                aria-label="Reimposta data a oggi"
-                disabled={date === todayISO()}
-              >
-                <RotateCcw size={16} strokeWidth={2.4} />
-              </button>
+          {!isInitial && (
+            <div className="bet-field">
+              <span className="bet-field__label">Data</span>
+              <div className="bet-field__row">
+                <input
+                  className="bet-field__input bet-field__input--date"
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="bet-field__reset"
+                  onClick={() => setDate(todayISO())}
+                  aria-label="Reimposta data a oggi"
+                  disabled={date === todayISO()}
+                >
+                  <RotateCcw size={16} strokeWidth={2.4} />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="bet-field">
             <span className="bet-field__label">
