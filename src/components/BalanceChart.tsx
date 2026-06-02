@@ -55,9 +55,18 @@ export function BalanceChart({ title, points }: Props) {
   const { ticks, min, max } = niceTicks(Math.min(...all, 0), Math.max(...all, 0), 5)
   const range = max - min || 1
 
-  const spacing = visible > 1 ? (plotR - plotL) / (visible - 1) : 0
+  // Larghezza candela basata sullo spazio pieno; in modalità candele rientriamo
+  // orizzontalmente di mezza candela così la prima e l'ultima non vengono tagliate.
+  const fullSpacing =
+    visible > 1 ? (plotR - plotL) / (visible - 1) : plotR - plotL
+  const candleW = Math.min(16, fullSpacing * 0.6)
+  const padX = mode === 'candle' ? candleW / 2 + 2 : 0
+  const innerL = plotL + padX
+  const innerR = plotR - padX
+
+  const spacing = visible > 1 ? (innerR - innerL) / (visible - 1) : 0
   const x = (a: number) =>
-    visible > 1 ? plotL + (a - startF) * spacing : (plotL + plotR) / 2
+    visible > 1 ? innerL + (a - startF) * spacing : (innerL + innerR) / 2
   const y = (v: number) => plotT + (1 - (v - min) / range) * (plotB - plotT)
 
   const openOf = (a: number) => (a > 0 ? points[a - 1].balance : 0)
@@ -98,9 +107,6 @@ export function BalanceChart({ title, points }: Props) {
       ),
     ),
   ]
-
-  const step = visible > 1 ? spacing : plotR - plotL
-  const candleW = Math.min(16, step * 0.6)
 
   // path linea + area su tutti i punti (poi ritagliata al riquadro)
   const linePath = points
